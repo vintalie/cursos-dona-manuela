@@ -36,8 +36,9 @@ Route::prefix('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:api','role:gerente'])->post('/users', [UserController::class, 'store']);
-
+Route::middleware(['auth:api', 'role:gerente'])->group(function () {
+    Route::apiResource('users', UserController::class);
+});
 
 Route::middleware('auth:api')->group(function () {
 

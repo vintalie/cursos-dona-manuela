@@ -1,11 +1,36 @@
 import { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
-import { User, Bell, Settings, LogOut } from "lucide-react";
+import { Outlet, Link, NavLink } from "react-router-dom";
+import {
+  User,
+  Bell,
+  Settings,
+  LogOut,
+  Home,
+  BookOpen,
+  BarChart3,
+  Users,
+  LayoutList,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AppLayout() {
   const { isGerente, logout } = useAuth();
   const [openDropdown, setOpenDropdown] = useState(false);
+
+  const employeeItems = [
+    { to: "/dashboard", label: "Dashboard", icon: Home },
+    { to: "/cursos", label: "Cursos", icon: BookOpen },
+    { to: "/meu-desempenho", label: "Meu Desempenho", icon: BarChart3 },
+  ];
+
+  const managerItems = [
+    { to: "/usuarios", label: "Usuários", icon: Users },
+    { to: "/cursos-manager", label: "Cursos", icon: BookOpen },
+    { to: "/criacao", label: "Criação", icon: LayoutList },
+    { to: "/desempenhos", label: "Desempenhos", icon: BarChart3 },
+  ];
+
+  const bottomNavItems = isGerente ? managerItems : employeeItems;
 
   return (
     <div className="app-layout">
@@ -52,6 +77,26 @@ export default function AppLayout() {
       <main className="layout-main">
         <Outlet />
       </main>
+
+      <nav className="bottom-nav">
+        <div className="bottom-nav-track">
+          {bottomNavItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `bottom-nav-item${isActive ? " bottom-nav-item-active" : ""}`
+                }
+              >
+                <Icon className="bottom-nav-icon" />
+                <span className="bottom-nav-label">{item.label}</span>
+              </NavLink>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

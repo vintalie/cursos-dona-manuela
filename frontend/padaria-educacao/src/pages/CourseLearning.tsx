@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CourseSidebar from "@/components/course/CourseSidebar";
 import LessonContent from "@/components/course/LessonContent";
 import AssessmentComponent from "@/components/course/Assessment";
+import { setDocumentTitle } from "@/config/appConfig";
 
 type ContentType = "lesson-1" | "lesson-2" | "assessment";
 
 export default function CourseLearning() {
   const { id } = useParams<{ id: string }>();
   const [activeContent, setActiveContent] = useState<ContentType>("lesson-1");
+
+  useEffect(() => {
+    setDocumentTitle(id ? `Curso ${id}` : "Curso");
+  }, [id]);
 
   const renderContent = () => {
     switch (activeContent) {

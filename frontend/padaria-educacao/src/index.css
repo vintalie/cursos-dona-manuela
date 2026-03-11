@@ -129,6 +129,41 @@
   background: hsl(var(--background));
 }
 
+/* ===== BOTTOM NAV (MOBILE) ===== */
+.bottom-nav {
+  display: none;
+}
+
+.bottom-nav-track {
+  @apply flex overflow-x-auto;
+}
+
+.bottom-nav-track::-webkit-scrollbar {
+  display: none;
+}
+
+.bottom-nav-track {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.bottom-nav-item {
+  @apply flex flex-col items-center justify-center py-2 text-xs text-muted-foreground;
+  flex: 0 0 33.3333%;
+}
+
+.bottom-nav-item-active {
+  @apply text-primary;
+}
+
+.bottom-nav-icon {
+  @apply mb-1;
+}
+
+.bottom-nav-label {
+  @apply truncate max-w-[7rem];
+}
+
 /* ===== SIDEBAR BOTTOM ===== */
 .sidebar-bottom {
   @apply relative;
@@ -444,6 +479,14 @@ th {
   @apply font-semibold text-muted-foreground text-xs uppercase tracking-wider;
 }
 
+.table-scroll {
+  @apply w-full overflow-x-auto;
+}
+
+.table-scroll table {
+  min-width: 560px;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .layout-sidebar {
@@ -481,5 +524,22 @@ th {
 
   .manager-tabs {
     @apply flex-col;
+  }
+
+  .layout-main {
+    @apply p-4 pb-20;
+  }
+
+  .card {
+    @apply mb-4;
+  }
+
+  section {
+    @apply mb-6;
+  }
+
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40;
+    display: block;
   }
 }

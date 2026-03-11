@@ -2,7 +2,9 @@ import {
   LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip,
   BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer,
 } from "recharts";
+import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { setDocumentTitle } from "@/config/appConfig";
 
 const progressoData = [
   { mes: "Jan", media: 60 },
@@ -25,6 +27,10 @@ const conclusaoData = [
 
 export default function UserPerformance() {
   const { isGerente } = useAuth();
+
+  useEffect(() => {
+    setDocumentTitle("Dashboard de Progresso");
+  }, []);
 
   return (
     <div>

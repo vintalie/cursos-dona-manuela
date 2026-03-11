@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import type { Course } from "@/types";
+import { setDocumentTitle } from "@/config/appConfig";
 
 const mockCourses: Course[] = [
   { id: 1, title: "Higiene na Manipulação", featured: true },
@@ -15,14 +16,18 @@ const mockCourses: Course[] = [
 
 const categories = ["Todas", "Higiene", "Atendimento", "Produção", "Gestão"];
 
-const courseCategory: Record<number, string> = {
-  1: "Higiene", 2: "Higiene",
-  3: "Atendimento", 4: "Atendimento",
-  5: "Produção", 6: "Produção",
-  7: "Gestão", 8: "Gestão",
-};
-
 export default function Courses() {
+  useEffect(() => {
+    setDocumentTitle("Cursos");
+  }, []);
+
+  const courseCategory: Record<number, string> = {
+    1: "Higiene", 2: "Higiene",
+    3: "Atendimento", 4: "Atendimento",
+    5: "Produção", 6: "Produção",
+    7: "Gestão", 8: "Gestão",
+  };
+
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todas");
   const [currentPage, setCurrentPage] = useState(1);

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { User } from "@/types";
 import { getUsers, createUser, deleteUser } from "@/services/user.service";
+import { setDocumentTitle } from "@/config/appConfig";
 
 export default function Users() {
   const [usuarios, setUsuarios] = useState<User[]>([]);
@@ -8,34 +9,34 @@ export default function Users() {
   const [novoNome, setNovoNome] = useState("");
   const [novoEmail, setNovoEmail] = useState("");
   const [novoTipo, setNovoTipo] = useState<"aluno" | "gerente">("aluno");
+  const [novoPassword, setNovoPassword] = useState("");
 
   async function carregarUsuarios() {
     const data = await getUsers();
     setUsuarios(data);
   }
 
+  useEffect(() => {
+    setDocumentTitle("Gerenciamento de Usuários");
+  }, []);
 
-useEffect(() => {
-  const carregar = async () => {
-    const data = await getUsers();
-    setUsuarios(data);
-  };
-
-  carregar();
-}, []);
+  useEffect(() => {
+    carregarUsuarios();
+  }, []);
 
   async function criarUsuario() {
-    await createUser({
+    const novoUsuario = await createUser({
       name: novoNome,
       email: novoEmail,
       tipo: novoTipo,
-      password: "123456",
+      password: novoPassword || "123456",
     });
 
-    await carregarUsuarios();
+    setUsuarios((prev) => [novoUsuario, ...prev]);
 
     setNovoNome("");
     setNovoEmail("");
+    setNovoPassword("");
   }
 
   async function removerUsuario(id: number) {
@@ -51,6 +52,12 @@ useEffect(() => {
         <h4>Criar Novo Usuário</h4>
         <input placeholder="Nome" value={novoNome} onChange={(e) => setNovoNome(e.target.value)} />
         <input placeholder="Email" value={novoEmail} onChange={(e) => setNovoEmail(e.target.value)} />
+        <input
+          placeholder="Senha"
+          type="password"
+          value={novoPassword}
+          onChange={(e) => setNovoPassword(e.target.value)}
+        />
         <select value={novoTipo} onChange={(e) => setNovoTipo(e.target.value as "aluno" | "gerente")}>
           <option value="aluno">Funcionário</option>
           <option value="gerente">Gerente</option>

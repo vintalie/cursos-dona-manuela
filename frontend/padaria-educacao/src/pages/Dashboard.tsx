@@ -1,6 +1,12 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { setDocumentTitle } from "@/config/appConfig";
 
 export default function Dashboard() {
+  useEffect(() => {
+    setDocumentTitle("Dashboard");
+  }, []);
+
   return (
     <div className="dashboard">
       <h2>Bem-vindo ao Sistema Educacional</h2>

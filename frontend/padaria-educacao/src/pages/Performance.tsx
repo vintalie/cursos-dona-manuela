@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { setDocumentTitle } from "@/config/appConfig";
 
 const usuarios = [
   { id: 1, nome: "João Silva", media: 95 },
@@ -10,6 +12,10 @@ const usuarios = [
 export default function Performance() {
   const navigate = useNavigate();
   const { isGerente } = useAuth();
+
+  useEffect(() => {
+    setDocumentTitle("Painel de Desempenho");
+  }, []);
 
   return (
     <div>

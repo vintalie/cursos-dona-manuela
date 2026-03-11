@@ -1,0 +1,485 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 96%;
+    --foreground: 220 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+
+    --primary: 0 60% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 70% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 15% 92%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 30 70% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 0 60% 45%;
+
+    --radius: 0.75rem;
+
+    --sidebar-bg: 220 25% 15%;
+    --sidebar-fg: 210 20% 95%;
+    --sidebar-hover: 220 20% 22%;
+    --sidebar-active: 0 60% 45%;
+
+    --sidebar-background: 220 25% 15%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 0 60% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 22%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 220 20% 25%;
+    --sidebar-ring: 0 60% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+  }
+}
+
+/* ===== LOGIN ===== */
+.login-container {
+  @apply flex justify-center items-center min-h-screen p-5;
+}
+
+.login-box {
+  @apply bg-card p-8 rounded-xl w-full max-w-md;
+  box-shadow: 0 8px 30px hsl(var(--foreground) / 0.08);
+}
+
+.login-box h2 {
+  @apply mb-6 text-center text-xl font-bold text-primary;
+}
+
+.login-box input {
+  @apply w-full p-3 mb-4 border border-input rounded-lg bg-background text-foreground;
+}
+
+.login-box button {
+  @apply w-full p-3 border-none bg-primary text-primary-foreground rounded-lg cursor-pointer font-semibold transition-all;
+}
+
+.login-box button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.error {
+  @apply text-destructive mb-3 text-sm;
+}
+
+/* ===== LAYOUT ===== */
+.app-layout {
+  @apply flex min-h-screen;
+}
+
+.layout-sidebar {
+  width: 260px;
+  background: hsl(var(--sidebar-bg));
+  color: hsl(var(--sidebar-fg));
+  @apply p-5 flex flex-col justify-between;
+}
+
+.layout-sidebar h2 {
+  @apply text-lg font-bold mb-6;
+}
+
+.layout-sidebar nav {
+  @apply flex flex-col gap-2;
+}
+
+.menu-link {
+  color: hsl(var(--sidebar-fg));
+  @apply no-underline py-2 px-3 rounded-lg transition-all text-sm font-medium;
+}
+
+.menu-link:hover {
+  background: hsl(var(--sidebar-hover));
+}
+
+.layout-main {
+  @apply flex-1 p-8;
+  background: hsl(var(--background));
+}
+
+/* ===== SIDEBAR BOTTOM ===== */
+.sidebar-bottom {
+  @apply relative;
+}
+
+.sidebar-bottom .divider {
+  height: 1px;
+  background: hsl(var(--sidebar-fg) / 0.15);
+  @apply w-4/5 mx-auto mb-4;
+}
+
+.sidebar-bottom .icons {
+  @apply flex justify-around items-center;
+}
+
+.sidebar-bottom .icons svg {
+  @apply cursor-pointer opacity-80;
+}
+
+.sidebar-bottom .icons svg:hover {
+  @apply opacity-100;
+}
+
+.user-dropdown {
+  @apply absolute bottom-9 right-0 p-3 rounded-lg w-44;
+  background: hsl(var(--sidebar-hover));
+  box-shadow: 0 5px 15px hsl(var(--foreground) / 0.2);
+}
+
+.user-dropdown .dropdown-item {
+  @apply flex items-center gap-2 p-2 cursor-pointer rounded-md text-sm;
+  color: hsl(var(--sidebar-fg));
+}
+
+.user-dropdown .dropdown-item:hover {
+  background: hsl(var(--sidebar-bg));
+}
+
+/* ===== CARDS ===== */
+.cards-grid {
+  @apply grid gap-5;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.card {
+  @apply bg-card p-5 rounded-xl mb-5;
+  box-shadow: 0 4px 16px hsl(var(--foreground) / 0.04);
+}
+
+.card h4 {
+  @apply mb-3 font-semibold text-foreground;
+}
+
+.card input,
+.card textarea,
+.card select {
+  @apply w-full p-3 mb-3 rounded-lg border border-input bg-background text-foreground text-sm;
+}
+
+.card textarea {
+  @apply min-h-[80px] resize-y;
+}
+
+/* ===== BUTTONS ===== */
+button {
+  @apply mr-2 py-2 px-4 border-none rounded-lg bg-primary text-primary-foreground cursor-pointer text-sm font-medium transition-all;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground;
+}
+
+.btn-danger {
+  @apply bg-destructive text-destructive-foreground;
+}
+
+.course-button {
+  @apply inline-block mt-3 py-2.5 px-5 rounded-xl bg-primary text-primary-foreground no-underline cursor-pointer text-sm font-medium transition-all;
+}
+
+.course-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard h2 {
+  @apply mb-5 text-foreground text-xl font-bold;
+}
+
+section {
+  @apply mb-8;
+}
+
+section h3 {
+  @apply mb-4 text-primary font-semibold;
+}
+
+/* ===== PROGRESS ===== */
+.progress-card {
+  @apply bg-card p-4 rounded-xl;
+}
+
+.progress-bar {
+  @apply bg-muted h-2 rounded-full mt-2;
+}
+
+.progress-fill {
+  @apply bg-primary h-2 rounded-full transition-all;
+}
+
+/* ===== BADGES ===== */
+.badges-list {
+  @apply flex gap-3 flex-wrap;
+}
+
+.badge-item {
+  @apply bg-card py-2 px-4 rounded-lg text-sm;
+  box-shadow: 0 3px 8px hsl(var(--foreground) / 0.04);
+}
+
+/* ===== COURSES PAGE ===== */
+.courses-container {
+  @apply flex gap-5 mt-5;
+}
+
+.categories {
+  @apply w-52 max-h-96 overflow-y-auto bg-card p-4 rounded-xl;
+}
+
+.categories button {
+  @apply w-full p-2.5 border-none bg-transparent text-left cursor-pointer rounded-lg mb-1 text-sm text-foreground;
+}
+
+.categories button:hover {
+  @apply bg-muted;
+}
+
+.categories button.active {
+  @apply bg-primary text-primary-foreground;
+}
+
+.courses-content {
+  @apply flex-1;
+}
+
+.search-bar {
+  @apply mb-5;
+}
+
+.search-bar input {
+  @apply w-full p-3 rounded-xl border border-input bg-card text-foreground;
+}
+
+.card.featured {
+  @apply relative;
+  border: 2px solid hsl(var(--primary));
+}
+
+.badge-featured {
+  @apply absolute top-3 right-3 bg-primary text-primary-foreground py-1 px-2 text-xs rounded-md font-medium;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+  @apply mt-5 flex gap-2;
+}
+
+.pagination button {
+  @apply py-1.5 px-3 border border-input bg-card cursor-pointer rounded-lg text-sm text-foreground;
+}
+
+.pagination button.active {
+  @apply bg-primary text-primary-foreground border-primary;
+}
+
+/* ===== MANAGER TABS ===== */
+.manager-tabs {
+  @apply flex gap-3 mb-5 flex-wrap;
+}
+
+.manager-tabs button {
+  @apply py-2 px-4 border-none bg-muted rounded-lg cursor-pointer text-sm text-foreground;
+}
+
+.manager-tabs button:hover,
+.manager-tabs button.active {
+  @apply bg-primary text-primary-foreground;
+}
+
+/* ===== COURSE LEARNING ===== */
+.course-container {
+  @apply flex min-h-screen;
+  background: hsl(var(--background));
+}
+
+.course-sidebar {
+  width: 280px;
+  @apply bg-card p-6;
+  border-radius: 0 1.5rem 1.5rem 0;
+  box-shadow: 4px 0 20px hsl(var(--foreground) / 0.04);
+}
+
+.course-sidebar .sidebar-title {
+  @apply text-lg font-semibold mb-6 text-foreground;
+}
+
+.course-sidebar .sidebar-section h3 {
+  @apply text-xs mb-3 text-muted-foreground uppercase tracking-wider;
+}
+
+.course-sidebar button {
+  @apply block w-full p-2.5 mb-2 border-none rounded-xl bg-muted cursor-pointer text-sm text-foreground transition-all;
+}
+
+.course-sidebar button:hover {
+  background: hsl(var(--muted));
+  opacity: 0.8;
+}
+
+.course-sidebar button.active {
+  @apply bg-primary text-primary-foreground;
+}
+
+.content-panel {
+  @apply flex-1 p-10;
+}
+
+.lesson-card {
+  @apply bg-card p-10 rounded-3xl;
+  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.04);
+}
+
+.lesson-card h1 {
+  @apply mb-5 text-xl font-bold text-foreground;
+}
+
+/* ===== ASSESSMENT ===== */
+.options button {
+  @apply block w-full p-3 my-2 rounded-xl border border-input bg-background cursor-pointer text-sm text-foreground transition-all;
+}
+
+.options button:hover {
+  background: hsl(var(--primary) / 0.05);
+  border-color: hsl(var(--primary));
+}
+
+.submit-btn {
+  @apply mt-5 py-3 px-6 rounded-xl border-none bg-primary text-primary-foreground cursor-pointer font-medium;
+}
+
+.result {
+  @apply mt-5 font-bold text-sm;
+}
+
+/* ===== QUESTION FORM ===== */
+.avaliacao-card {
+  @apply bg-card p-5 rounded-xl mt-5;
+}
+
+.pergunta-input {
+  @apply w-full p-3 rounded-lg border border-input min-h-[60px] mb-3 text-sm;
+}
+
+.multipla-container {
+  @apply mb-4;
+}
+
+.multipla-container label {
+  @apply flex items-center gap-2 text-sm text-foreground cursor-pointer;
+}
+
+.alternativas-grid {
+  @apply flex flex-col gap-3;
+}
+
+.alternativa-item {
+  @apply flex items-center gap-3;
+}
+
+.alternativa-item .letra {
+  @apply font-bold text-primary text-sm w-6;
+}
+
+.alternativa-input {
+  @apply flex-1 p-2 rounded-lg border border-input text-sm;
+}
+
+.correta-check {
+  @apply cursor-pointer;
+}
+
+.salvar-btn {
+  @apply mt-4 bg-primary text-primary-foreground;
+}
+
+/* ===== TABLE ===== */
+table {
+  @apply w-full text-sm;
+  border-collapse: collapse;
+}
+
+th, td {
+  @apply p-3 text-left;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+th {
+  @apply font-semibold text-muted-foreground text-xs uppercase tracking-wider;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .layout-sidebar {
+    @apply fixed h-full z-50;
+    transform: translateX(-100%);
+  }
+
+  .layout-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .courses-container {
+    @apply flex-col;
+  }
+
+  .categories {
+    @apply w-full flex overflow-x-auto gap-2;
+  }
+
+  .categories button {
+    @apply whitespace-nowrap;
+  }
+
+  .course-container {
+    @apply flex-col;
+  }
+
+  .course-sidebar {
+    @apply w-full rounded-none;
+  }
+
+  .content-panel {
+    @apply p-5;
+  }
+
+  .manager-tabs {
+    @apply flex-col;
+  }
+}

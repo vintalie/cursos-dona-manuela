@@ -20,6 +20,8 @@ class QuestionController extends Controller
         $validated = $request->validate([
             'assessment_id' => 'required|exists:assessments,id',
             'text' => 'required|string',
+            'answer_text' => 'nullable|string',
+            'is_multiple_choice' => 'nullable|boolean',
             'score' => 'nullable|integer'
         ]);
 
@@ -38,6 +40,7 @@ class QuestionController extends Controller
 
         $validated = $request->validate([
             'text' => 'sometimes|string',
+            'answer_text' => 'nullable|string',
             'score' => 'nullable|integer'
         ]);
 

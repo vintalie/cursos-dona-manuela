@@ -7,7 +7,10 @@ export default function LessonContent({ title, content }: LessonProps) {
   return (
     <div className="lesson-card">
       <h1>{title}</h1>
-      <p style={{ whiteSpace: "pre-line" }}>{content}</p>
+      <div
+        className="lesson-content prose prose-sm max-w-none"
+        dangerouslySetInnerHTML={{ __html: content || "Sem conteúdo." }}
+      />
     </div>
   );
 }

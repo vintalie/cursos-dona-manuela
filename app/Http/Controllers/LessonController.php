@@ -20,6 +20,8 @@ class LessonController extends Controller
         $validated = $request->validate([
             'module_id' => 'required|exists:modules,id',
             'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'position' => 'nullable|integer',
             'content' => 'nullable|string'
         ]);
 
@@ -38,6 +40,8 @@ class LessonController extends Controller
 
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'position' => 'nullable|integer',
             'content' => 'nullable|string'
         ]);
 

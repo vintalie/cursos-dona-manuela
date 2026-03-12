@@ -19,6 +19,6 @@ class Module extends Model {
     }
 
     public function assessments() {
-        return $this->hasMany(Assessment::class);
+        return $this->hasMany(Assessment::class)->orderBy('position');
     }
 }

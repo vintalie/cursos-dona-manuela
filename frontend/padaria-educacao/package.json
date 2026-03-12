@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp dist/sw.js public/sw.js 2>/dev/null || true",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -49,12 +49,16 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "laravel-echo": "^2.3.1",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
+    "pusher-js": "^8.4.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
+    "react-gauge-chart": "^0.5.1",
     "react-hook-form": "^7.61.1",
+    "react-quill": "^2.0.0",
     "react-resizable-panels": "^2.1.9",
     "react-router-dom": "^6.30.1",
     "recharts": "^2.15.4",
@@ -86,6 +90,9 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vite": "^5.4.19",
-    "vitest": "^3.2.4"
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^3.2.4",
+    "workbox-core": "^7.4.0",
+    "workbox-precaching": "^7.4.0"
   }
 }

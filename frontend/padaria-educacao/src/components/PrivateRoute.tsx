@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import PageLoader from "@/components/ui/PageLoader";
 
 interface PrivateRouteProps {
   requiredRole?: "gerente" | "aluno";
@@ -9,11 +10,7 @@ export default function PrivateRoute({ requiredRole }: PrivateRouteProps) {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-lg text-muted-foreground">Carregando...</div>
-      </div>
-    );
+    return <PageLoader loading={true} />;
   }
 
   if (!isAuthenticated) {

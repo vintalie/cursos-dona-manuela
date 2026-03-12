@@ -1,6 +1,13 @@
 import { useState } from "react";
+import { createQuestion } from "@/services/question.service";
+import { createOption } from "@/services/option.service";
 
-export default function CreatePergunta() {
+interface CreatePerguntaProps {
+  assessmentId: number;
+  onQuestionAdded?: () => void;
+}
+
+export default function CreatePergunta({ assessmentId, onQuestionAdded }: CreatePerguntaProps) {
   const [pergunta, setPergunta] = useState("");
   const [multiplaEscolha, setMultiplaEscolha] = useState(false);
   const [alternativas, setAlternativas] = useState([
@@ -9,6 +16,8 @@ export default function CreatePergunta() {
     { letra: "C", texto: "", correta: false },
     { letra: "D", texto: "", correta: false },
   ]);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleAlternativaChange = (index: number, value: string) => {
     const novas = [...alternativas];
@@ -26,17 +35,54 @@ export default function CreatePergunta() {
     }
   };
 
-  const salvarPergunta = () => {
-    console.log({ pergunta, multiplaEscolha, alternativas });
-    alert("Pergunta criada com sucesso!");
-    setPergunta("");
-    setMultiplaEscolha(false);
-    setAlternativas([
-      { letra: "A", texto: "", correta: false },
-      { letra: "B", texto: "", correta: false },
-      { letra: "C", texto: "", correta: false },
-      { letra: "D", texto: "", correta: false },
-    ]);
+  const salvarPergunta = async () => {
+    if (!pergunta.trim()) {
+      alert("Digite a pergunta");
+      return;
+    }
+    const comTexto = alternativas.filter((a) => a.texto.trim());
+    if (comTexto.length < 2) {
+      alert("Adicione pelo menos 2 alternativas");
+      return;
+    }
+    const temCorreta = alternativas.some((a) => a.correta);
+    if (!temCorreta) {
+      alert("Marque a alternativa correta");
+      return;
+    }
+    setLoading(true);
+    setSuccess(false);
+    try {
+      const q = await createQuestion({
+        assessment_id: assessmentId,
+        text: pergunta.trim(),
+        is_multiple_choice: multiplaEscolha,
+      });
+      for (const alt of alternativas) {
+        if (alt.texto.trim()) {
+          await createOption({
+            question_id: q.id,
+            label: alt.letra,
+            text: alt.texto.trim(),
+            is_correct: alt.correta,
+          });
+        }
+      }
+      setPergunta("");
+      setMultiplaEscolha(false);
+      setAlternativas([
+        { letra: "A", texto: "", correta: false },
+        { letra: "B", texto: "", correta: false },
+        { letra: "C", texto: "", correta: false },
+        { letra: "D", texto: "", correta: false },
+      ]);
+      setSuccess(true);
+      onQuestionAdded?.();
+    } catch (err) {
+      alert("Erro ao salvar pergunta");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,7 +121,10 @@ export default function CreatePergunta() {
           </div>
         ))}
       </div>
-      <button className="salvar-btn" onClick={salvarPergunta}>Salvar Pergunta</button>
+      {success && <p className="text-green-600 text-sm mb-2">Pergunta salva!</p>}
+      <button className="salvar-btn" onClick={salvarPergunta} disabled={loading}>
+        {loading ? "Salvando..." : "Salvar Pergunta"}
+      </button>
     </div>
   );
 }

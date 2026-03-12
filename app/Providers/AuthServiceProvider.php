@@ -11,11 +11,13 @@ use Illuminate\Support\Facades\Gate;
 |--------------------------------------------------------------------------
 */
 
+use App\Models\Badge;
 use App\Models\Course;
 use App\Models\Module;
 use App\Models\Lesson;
 use App\Models\Assessment;
 use App\Models\Question;
+use App\Models\Category;
 use App\Models\Option;
 use App\Models\User;
 
@@ -30,6 +32,7 @@ use App\Policies\ModulePolicy;
 use App\Policies\LessonPolicy;
 use App\Policies\AssessmentPolicy;
 use App\Policies\QuestionPolicy;
+use App\Policies\CategoryPolicy;
 use App\Policies\OptionPolicy;
 use App\Policies\UserPolicy;
 
@@ -42,12 +45,14 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
 
+        Badge::class      => BadgePolicy::class,
         Course::class     => CoursePolicy::class,
         Module::class     => ModulePolicy::class,
         Lesson::class     => LessonPolicy::class,
         Assessment::class => AssessmentPolicy::class,
         Question::class   => QuestionPolicy::class,
         Option::class     => OptionPolicy::class,
+        Category::class   => CategoryPolicy::class,
         User::class => UserPolicy::class,
     ];
 

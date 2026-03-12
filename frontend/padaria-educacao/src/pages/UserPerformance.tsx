@@ -1,106 +1,186 @@
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
-  LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip,
-  BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer,
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
 } from "recharts";
-import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { setDocumentTitle } from "@/config/appConfig";
-
-const progressoData = [
-  { mes: "Jan", media: 60 },
-  { mes: "Fev", media: 70 },
-  { mes: "Mar", media: 80 },
-  { mes: "Abr", media: 85 },
-  { mes: "Mai", media: 90 },
-];
-
-const acertosData = [
-  { nome: "Atendimento", acertos: 90 },
-  { nome: "Vendas", acertos: 75 },
-  { nome: "Higiene", acertos: 88 },
-];
-
-const conclusaoData = [
-  { name: "Concluído", value: 8 },
-  { name: "Em andamento", value: 3 },
-];
+import { getMyPerformance, getUserPerformance, type UserPerformanceData } from "@/services/performance.service";
+import GaugeChart from "@/components/performance/GaugeChart";
+import PageLoader from "@/components/ui/PageLoader";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function UserPerformance() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { isGerente } = useAuth();
+  const [data, setData] = useState<UserPerformanceData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const isOwnDashboard = location.pathname === "/meu-desempenho" || id === "me";
 
   useEffect(() => {
-    setDocumentTitle("Dashboard de Progresso");
-  }, []);
+    setDocumentTitle(isOwnDashboard ? "Meu Desempenho" : "Desempenho do Aluno");
+  }, [isOwnDashboard]);
+
+  function fetchData() {
+    setLoading(true);
+    if (isOwnDashboard) {
+      getMyPerformance()
+        .then(setData)
+        .catch(() => setData(null))
+        .finally(() => setLoading(false));
+    } else if (id && isGerente) {
+      getUserPerformance(parseInt(id, 10))
+        .then(setData)
+        .catch(() => setData(null))
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [id, isGerente, isOwnDashboard]);
+
+  if (!isOwnDashboard && !isGerente) {
+    navigate("/meu-desempenho");
+    return null;
+  }
+
+  const { user, stats, courses, timeline } = data ?? {};
+  const acertos = stats?.average_score ?? 0;
+  const erros = 100 - acertos;
+
+  const pieData = data
+    ? [{ name: stats?.approved ? "Aprovado" : "Reprovado", value: 1, color: stats?.approved ? "#22c55e" : "#ef4444" }]
+    : [];
 
   return (
-    <div>
-      <h2 className="mb-5 text-xl font-bold text-foreground">Dashboard de Progresso</h2>
-
-      <div className="card">
-        <h4>Resumo</h4>
-        <p>Média Geral: 88%</p>
-        <p>Cursos Concluídos: 8</p>
-        <p>Total de Avaliações: 25</p>
-      </div>
-
-      <div className="card">
-        <h4>Evolução de Desempenho</h4>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={progressoData}>
-            <Line type="monotone" dataKey="media" stroke="hsl(0, 60%, 45%)" />
-            <CartesianGrid stroke="#e2e8f0" />
-            <XAxis dataKey="mes" />
-            <YAxis />
-            <Tooltip />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="card">
-        <h4>Acertos por Disciplina</h4>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={acertosData}>
-            <Bar dataKey="acertos" fill="hsl(30, 70%, 50%)" radius={[6, 6, 0, 0]} />
-            <XAxis dataKey="nome" />
-            <YAxis />
-            <Tooltip />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="card">
-        <h4>Status dos Cursos</h4>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie data={conclusaoData} dataKey="value" outerRadius={100} label>
-              <Cell fill="hsl(0, 60%, 45%)" />
-              <Cell fill="hsl(30, 70%, 50%)" />
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="card">
-        <h4>Timeline de Progresso</h4>
-        <ul className="list-none space-y-2">
-          <li>✔ Curso Atendimento concluído - 12/01</li>
-          <li>✔ Avaliação Vendas - 85% - 20/02</li>
-          <li>✔ Curso Higiene concluído - 05/03</li>
-          <li>✔ Avaliação Final - 92% - 10/04</li>
-        </ul>
-      </div>
-
-      {isGerente && (
-        <div className="card">
-          <h4>Ranking Interno</h4>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>João Silva - 95%</li>
-            <li>Maria Souza - 91%</li>
-            <li>Carlos Mendes - 45%</li>
-          </ol>
+    <PageLoader loading={loading}>
+    {!loading && !data && (
+      <div>
+        <h2 className="mb-5 text-xl font-bold text-foreground">
+          {isOwnDashboard ? "Meu Desempenho" : "Desempenho do Aluno"}
+        </h2>
+        <div className="empty-state-wrapper bg-card rounded-xl border border-border">
+          <EmptyState
+            variant="error"
+            title="Não foi possível carregar os dados"
+            description="Verifique sua conexão e tente novamente."
+            onRetry={fetchData}
+          />
         </div>
-      )}
+      </div>
+    )}
+    {data && (
+    <div className="user-performance-dashboard">
+      <h2 className="page-title mb-5 text-xl font-bold text-foreground">
+        {isOwnDashboard ? "Meu Desempenho" : `Desempenho - ${user.name}`}
+      </h2>
+
+      <div className="performance-overview-cards mb-6">
+        <div className="stat-card">
+          <span className="stat-value">{stats.average_score}%</span>
+          <span className="stat-label">Média Geral</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-value">{stats.courses_completed}</span>
+          <span className="stat-label">Cursos Concluídos</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-value">{stats.assessments_completed}</span>
+          <span className="stat-label">Avaliações</span>
+        </div>
+        <div className="stat-card">
+          <span className={`stat-value ${stats.approved ? "text-green-600" : "text-red-600"}`}>
+            {stats.approved ? "Aprovado" : "Reprovado"}
+          </span>
+          <span className="stat-label">Status</span>
+        </div>
+      </div>
+
+      <div className="charts-grid">
+        <div className="chart-card">
+          <GaugeChart
+            acertos={acertos}
+            erros={erros}
+            title="Taxa de Acertos"
+          />
+        </div>
+
+        <div className="chart-card">
+          <h4 className="text-sm font-semibold mb-3">Timeline de Desempenho</h4>
+          {(timeline?.length ?? 0) === 0 ? (
+            <div className="chart-empty">
+              <p className="text-sm text-muted-foreground">Nenhuma avaliação realizada ainda.</p>
+            </div>
+          ) : (
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart data={timeline ?? []}>
+              <Line type="monotone" dataKey="media" stroke="hsl(var(--primary))" strokeWidth={2} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+              <YAxis stroke="hsl(var(--muted-foreground))" domain={[0, 100]} />
+              <Tooltip />
+            </LineChart>
+          </ResponsiveContainer>
+          )}
+        </div>
+
+        <div className="chart-card">
+          <h4 className="text-sm font-semibold mb-3">Status</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={70}
+                label={({ name }) => name}
+              >
+                <Cell fill={pieData[0].color} />
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="chart-card col-span-2">
+          <h4 className="text-sm font-semibold mb-3">Progresso por Curso</h4>
+          {(courses?.length ?? 0) === 0 ? (
+            <div className="chart-empty">
+              <p className="text-sm text-muted-foreground">Nenhum curso matriculado.</p>
+            </div>
+          ) : (
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={courses ?? []} layout="vertical" margin={{ left: 20 }}>
+              <Bar dataKey="progress" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+              <XAxis type="number" domain={[0, 100]} stroke="hsl(var(--muted-foreground))" />
+              <YAxis type="category" dataKey="title" width={120} stroke="hsl(var(--muted-foreground))" />
+              <Tooltip />
+            </BarChart>
+          </ResponsiveContainer>
+          )}
+        </div>
+      </div>
     </div>
+    )}
+    </PageLoader>
   );
 }

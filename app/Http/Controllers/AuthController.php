@@ -55,6 +55,22 @@ public function login(Request $request)
         return response()->json(Auth::user());
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'full_name' => 'nullable|string|max:255',
+            'avatar' => 'nullable|string|max:500',
+            'gender' => 'nullable|string|in:masculino,feminino,outro,prefiro_nao_informar',
+            'address' => 'nullable|string|max:500',
+            'whatsapp' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20',
+        ]);
+        $user->update($validated);
+        return response()->json($user);
+    }
+
     public function logout()
     {
         Auth::logout();

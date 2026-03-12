@@ -9,6 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   isGerente: boolean;
   loginStore: (token: string, user: User) => void;
+  setUser: (user: User | null) => void;
   logout: () => Promise<void>;
 }
 
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         isGerente: user?.tipo === "gerente",
         loginStore,
+        setUser,
         logout,
       }}
     >

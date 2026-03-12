@@ -16,6 +16,19 @@ export async function getMe(): Promise<User> {
   return response.data;
 }
 
+export async function updateProfile(data: Partial<{
+  name: string;
+  full_name: string;
+  avatar: string;
+  gender: string;
+  address: string;
+  whatsapp: string;
+  phone: string;
+}>): Promise<User> {
+  const response = await api.put<User>("/auth/me", data);
+  return response.data;
+}
+
 export async function logoutApi(): Promise<void> {
   await api.post("/auth/logout");
 }

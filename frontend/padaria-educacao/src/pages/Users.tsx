@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import type { User } from "@/types";
 import { getUsers, createUser, deleteUser } from "@/services/user.service";
 import { setDocumentTitle } from "@/config/appConfig";
+import { useAuth } from "@/contexts/AuthContext";
+import ConfirmDeleteDialog from "@/components/ui/ConfirmDeleteDialog";
 
 export default function Users() {
+  const { user: currentUser } = useAuth();
   const [usuarios, setUsuarios] = useState<User[]>([]);
+  const [deleteUserTarget, setDeleteUserTarget] = useState<User | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [novoNome, setNovoNome] = useState("");
   const [novoEmail, setNovoEmail] = useState("");
@@ -39,14 +44,21 @@ export default function Users() {
     setNovoPassword("");
   }
 
-  async function removerUsuario(id: number) {
-    await deleteUser(id);
-    await carregarUsuarios();
+  async function handleConfirmDelete() {
+    if (!deleteUserTarget) return;
+    setDeleteLoading(true);
+    try {
+      await deleteUser(deleteUserTarget.id);
+      await carregarUsuarios();
+    } finally {
+      setDeleteLoading(false);
+      setDeleteUserTarget(null);
+    }
   }
 
   return (
     <div>
-      <h2 className="mb-5 text-xl font-bold text-foreground">Gerenciamento de Usuários</h2>
+      <h2 className="page-title mb-5 text-xl font-bold text-foreground">Gerenciamento de Usuários</h2>
 
       <div className="card">
         <h4>Criar Novo Usuário</h4>
@@ -83,14 +95,36 @@ export default function Users() {
                 <td>{u.email}</td>
                 <td>{u.tipo}</td>
                 <td>
-                  <button>Editar</button>
-                  <button className="btn-danger" onClick={() => removerUsuario(u.id)}>Remover</button>
+                  <div className="flex flex-wrap gap-2">
+                    <button>Editar</button>
+                    <button
+                      className="btn-danger"
+                      onClick={() => setDeleteUserTarget(u)}
+                      disabled={currentUser?.id === u.id}
+                      title={currentUser?.id === u.id ? "Você não pode excluir sua própria conta" : "Remover usuário"}
+                    >
+                      Remover
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <ConfirmDeleteDialog
+        open={!!deleteUserTarget}
+        onOpenChange={(open) => !open && setDeleteUserTarget(null)}
+        title="Excluir usuário"
+        description={
+          deleteUserTarget
+            ? `Excluir o usuário "${deleteUserTarget.name}" (${deleteUserTarget.email})? Esta ação não pode ser desfeita.`
+            : ""
+        }
+        onConfirm={handleConfirmDelete}
+        loading={deleteLoading}
+      />
     </div>
   );
 }

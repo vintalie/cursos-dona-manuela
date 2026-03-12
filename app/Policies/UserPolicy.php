@@ -15,10 +15,13 @@ class UserPolicy
     }
 
     /**
-     * Apenas gerente pode deletar usuários
+     * Apenas gerente pode deletar usuários. Gerente não pode excluir a própria conta.
      */
-    public function delete(User $user)
+    public function delete(User $user, User $model)
     {
+        if ($user->id === $model->id) {
+            return false;
+        }
         return $user->tipo === 'gerente';
     }
 

@@ -12,10 +12,14 @@ import Dashboard from "@/pages/Dashboard";
 import Courses from "@/pages/Courses";
 import CourseLearning from "@/pages/CourseLearning";
 import ManagerDashboard from "@/pages/ManagerDashboard";
-import CoursesManager from "@/pages/CoursesManager";
 import Users from "@/pages/Users";
 import Performance from "@/pages/Performance";
 import UserPerformance from "@/pages/UserPerformance";
+import Settings from "@/pages/Settings";
+import BadgesManager from "@/pages/BadgesManager";
+import NotificationsManager from "@/pages/NotificationsManager";
+import MyBadges from "@/pages/MyBadges";
+import Minigames from "@/pages/Minigames";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,11 +39,16 @@ const App = () => (
                 {/* Funcionário */}
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/cursos" element={<Courses />} />
-                <Route path="/meu-desempenho" element={<Performance />} />
+                <Route path="/minhas-medalhas" element={<MyBadges />} />
+                <Route path="/minigames" element={<Minigames />} />
+                <Route path="/meu-desempenho" element={<UserPerformance />} />
+
+                <Route path="/configuracoes" element={<Settings />} />
 
                 {/* Gerente */}
                 <Route path="/usuarios" element={<Users />} />
-                <Route path="/cursos-manager" element={<CoursesManager />} />
+                <Route path="/medalhas" element={<BadgesManager />} />
+                <Route path="/notificacoes" element={<NotificationsManager />} />
                 <Route path="/criacao" element={<ManagerDashboard />} />
                 <Route path="/desempenhos" element={<Performance />} />
                 <Route path="/desempenhos/:id" element={<UserPerformance />} />

@@ -45,8 +45,8 @@ VITE_API_BASE="${APP_URL}"
 ```
 
 O `VITE_API_BASE` deve apontar para o backend. Exemplos:
-- Laravel em `http://localhost:8000` → `VITE_API_BASE=http://localhost:8000`
-- Sail (porta 80) → `VITE_API_BASE=http://localhost`
+- Laravel em `https://ead-api.dcmmarketingdigital.com.br:8000` → `VITE_API_BASE=https://ead-api.dcmmarketingdigital.com.br:8000`
+- Sail (porta 80) → `VITE_API_BASE=https://ead-api.dcmmarketingdigital.com.br`
 - Produção → `VITE_API_BASE=https://seudominio.com`
 
 ### 4. Testar Web Push
@@ -56,14 +56,14 @@ O `VITE_API_BASE` deve apontar para o backend. Exemplos:
 cd frontend/padaria-educacao
 npm run build
 npm run preview
-# Acesse http://localhost:4173 (ou a porta indicada)
+# Acesse https://ead-api.dcmmarketingdigital.com.br:4173 (ou a porta indicada)
 ```
 
 **Opção B – Desenvolvimento**
 ```bash
 cd frontend/padaria-educacao
 npm run dev
-# Acesse http://localhost:8080
+# Acesse https://ead.dcmmarketingdigital.com.br
 # O Service Worker em dev está habilitado (dev-sw.js)
 ```
 

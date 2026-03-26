@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCourses } from "@/services/course.service";
+import { showAlert } from "@/contexts/AlertPopupContext";
 import { createAssessment } from "@/services/assessment.service";
 import CreatePergunta from "./CreatePergunta";
 import type { Course, Module } from "@/types";
@@ -13,8 +14,6 @@ export default function CreateAvaliacao() {
   const [modules, setModules] = useState<Module[]>([]);
   const [assessmentId, setAssessmentId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     getCourses().then(setCourses).catch(() => setCourses([]));
@@ -27,14 +26,12 @@ export default function CreateAvaliacao() {
 
   async function handleCreateAssessment(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
     if (!title.trim()) {
-      setError("Título é obrigatório");
+      showAlert({ type: "error", message: "Título é obrigatório" });
       return;
     }
     if (!moduleId) {
-      setError("Selecione uma matéria");
+      showAlert({ type: "error", message: "Selecione uma matéria" });
       return;
     }
     setLoading(true);
@@ -46,9 +43,9 @@ export default function CreateAvaliacao() {
         worth_points: worthPoints,
       });
       setAssessmentId(a.id);
-      setSuccess(true);
+      showAlert({ type: "success", message: "Avaliação criada! Adicione perguntas abaixo." });
     } catch (err: unknown) {
-      setError((err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Erro ao criar avaliação");
+      showAlert({ type: "error", message: (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Erro ao criar avaliação" });
     } finally {
       setLoading(false);
     }
@@ -91,8 +88,6 @@ export default function CreateAvaliacao() {
             value={maxScore}
             onChange={(e) => setMaxScore(e.target.value)}
           />
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-          {success && <p className="text-green-600 text-sm mb-2">Avaliação criada! Adicione perguntas abaixo.</p>}
           <button type="submit" disabled={loading}>
             {loading ? "Criando..." : "Criar Avaliação"}
           </button>

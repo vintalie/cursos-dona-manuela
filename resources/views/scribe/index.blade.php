@@ -26,7 +26,7 @@
             </style>
 
     <script>
-        var tryItOutBaseUrl = "http://localhost";
+        var tryItOutBaseUrl = "https://ead-api.dcmmarketingdigital.com.br";
         var useCsrf = Boolean();
         var csrfUrl = "/sanctum/csrf-cookie";
     </script>
@@ -196,7 +196,7 @@
     <div class="content">
         <h1 id="introduction">Introduction</h1>
 <aside>
-    <strong>Base URL</strong>: <code>http://localhost</code>
+    <strong>Base URL</strong>: <code>https://ead-api.dcmmarketingdigital.com.br</code>
 </aside>
 <pre><code>This documentation aims to provide all the information you need to work with our API.
 
@@ -225,7 +225,7 @@ You can switch the language used with the tabs at the top right (or from the nav
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/auth/register" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/auth/register" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -240,7 +240,7 @@ You can switch the language used with the tabs at the top right (or from the nav
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/auth/register"
+    "https://ead-api.dcmmarketingdigital.com.br/api/auth/register"
 );
 
 const headers = {
@@ -416,7 +416,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/auth/login" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/auth/login" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -424,7 +424,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/auth/login"
+    "https://ead-api.dcmmarketingdigital.com.br/api/auth/login"
 );
 
 const headers = {
@@ -542,7 +542,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/auth/me" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/auth/me" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -550,7 +550,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/auth/me"
+    "https://ead-api.dcmmarketingdigital.com.br/api/auth/me"
 );
 
 const headers = {
@@ -577,7 +577,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -685,7 +685,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/auth/logout" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/auth/logout" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -693,7 +693,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/auth/logout"
+    "https://ead-api.dcmmarketingdigital.com.br/api/auth/logout"
 );
 
 const headers = {
@@ -811,7 +811,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/courses" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/courses" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -819,7 +819,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/courses"
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses"
 );
 
 const headers = {
@@ -846,7 +846,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -954,7 +954,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/courses" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -969,7 +969,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/courses"
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses"
 );
 
 const headers = {
@@ -1153,7 +1153,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/courses/16" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/courses/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1161,7 +1161,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/courses/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses/16"
 );
 
 const headers = {
@@ -1188,7 +1188,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -1309,7 +1309,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/courses/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -1324,7 +1324,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/courses/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses/16"
 );
 
 const headers = {
@@ -1525,7 +1525,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost/api/courses/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1533,7 +1533,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/courses/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses/16"
 );
 
 const headers = {
@@ -1664,7 +1664,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/courses/16/feature" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses/16/feature" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1672,7 +1672,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/courses/16/feature"
+    "https://ead-api.dcmmarketingdigital.com.br/api/courses/16/feature"
 );
 
 const headers = {
@@ -1803,7 +1803,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/modules" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/modules" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1811,7 +1811,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/modules"
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules"
 );
 
 const headers = {
@@ -1838,7 +1838,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -1946,7 +1946,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/modules" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -1960,7 +1960,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/modules"
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules"
 );
 
 const headers = {
@@ -2121,7 +2121,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/modules/16" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/modules/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -2129,7 +2129,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/modules/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules/16"
 );
 
 const headers = {
@@ -2156,7 +2156,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -2277,7 +2277,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/modules/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -2290,7 +2290,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/modules/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules/16"
 );
 
 const headers = {
@@ -2455,7 +2455,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost/api/modules/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -2463,7 +2463,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/modules/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/modules/16"
 );
 
 const headers = {
@@ -2594,7 +2594,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/lessons" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/lessons" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -2602,7 +2602,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/lessons"
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons"
 );
 
 const headers = {
@@ -2629,7 +2629,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -2737,7 +2737,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/lessons" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -2751,7 +2751,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/lessons"
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons"
 );
 
 const headers = {
@@ -2912,7 +2912,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/lessons/16" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/lessons/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -2920,7 +2920,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/lessons/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons/16"
 );
 
 const headers = {
@@ -2947,7 +2947,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -3068,7 +3068,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/lessons/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -3081,7 +3081,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/lessons/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons/16"
 );
 
 const headers = {
@@ -3246,7 +3246,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost/api/lessons/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -3254,7 +3254,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/lessons/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/lessons/16"
 );
 
 const headers = {
@@ -3385,7 +3385,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/assessments" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/assessments" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -3393,7 +3393,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/assessments"
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments"
 );
 
 const headers = {
@@ -3420,7 +3420,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -3528,7 +3528,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/assessments" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -3542,7 +3542,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/assessments"
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments"
 );
 
 const headers = {
@@ -3703,7 +3703,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/assessments/16" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/assessments/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -3711,7 +3711,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/assessments/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments/16"
 );
 
 const headers = {
@@ -3738,7 +3738,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -3859,7 +3859,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/assessments/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -3872,7 +3872,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/assessments/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments/16"
 );
 
 const headers = {
@@ -4037,7 +4037,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost/api/assessments/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -4045,7 +4045,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/assessments/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/assessments/16"
 );
 
 const headers = {
@@ -4176,7 +4176,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/questions" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/questions" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -4184,7 +4184,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/questions"
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions"
 );
 
 const headers = {
@@ -4211,7 +4211,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -4319,7 +4319,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/questions" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -4333,7 +4333,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/questions"
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions"
 );
 
 const headers = {
@@ -4494,7 +4494,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/questions/16" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/questions/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -4502,7 +4502,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/questions/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions/16"
 );
 
 const headers = {
@@ -4529,7 +4529,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -4650,7 +4650,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/questions/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -4663,7 +4663,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/questions/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions/16"
 );
 
 const headers = {
@@ -4828,7 +4828,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost/api/questions/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -4836,7 +4836,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/questions/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/questions/16"
 );
 
 const headers = {
@@ -4967,7 +4967,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/options" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/options" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -4975,7 +4975,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/options"
+    "https://ead-api.dcmmarketingdigital.com.br/api/options"
 );
 
 const headers = {
@@ -5002,7 +5002,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -5110,7 +5110,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/options" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/options" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -5125,7 +5125,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/options"
+    "https://ead-api.dcmmarketingdigital.com.br/api/options"
 );
 
 const headers = {
@@ -5309,7 +5309,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/options/16" \
+    --get "https://ead-api.dcmmarketingdigital.com.br/api/options/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -5317,7 +5317,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/options/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/options/16"
 );
 
 const headers = {
@@ -5344,7 +5344,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:5173
+access-control-allow-origin: https://ead-api.dcmmarketingdigital.com.br:5173
 access-control-allow-credentials: true
  </code></pre></details>         <pre>
 
@@ -5465,7 +5465,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/options/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/options/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -5478,7 +5478,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/options/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/options/16"
 );
 
 const headers = {
@@ -5653,7 +5653,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost/api/options/16" \
+    "https://ead-api.dcmmarketingdigital.com.br/api/options/16" \
     --header "Authorization: 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -5661,7 +5661,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/options/16"
+    "https://ead-api.dcmmarketingdigital.com.br/api/options/16"
 );
 
 const headers = {

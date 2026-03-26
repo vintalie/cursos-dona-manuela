@@ -4,12 +4,23 @@ import { getGames, type Game } from "@/services/game.service";
 import PageLoader from "@/components/ui/PageLoader";
 import EmptyState from "@/components/ui/EmptyState";
 import MemoryGame from "@/components/games/MemoryGame";
+import OrderingGame from "@/components/games/OrderingGame";
+import VisualQuizGame from "@/components/games/VisualQuizGame";
+import TrueFalseGame from "@/components/games/TrueFalseGame";
+import MatchingGame from "@/components/games/MatchingGame";
+import WordScrambleGame from "@/components/games/WordScrambleGame";
+import NextIngredientGame from "@/components/games/NextIngredientGame";
+import GameIntroScreen from "@/components/games/GameIntroScreen";
 import { Gamepad2 } from "lucide-react";
 
 const GAME_TYPE_LABELS: Record<string, string> = {
   memory: "Memória",
-  quiz: "Quiz",
-  ordering: "Ordenação",
+  ordering: "Monte a Receita",
+  visual_quiz: "Identifique o Produto",
+  true_false: "V ou F",
+  matching: "Conecte os Pares",
+  word_scramble: "Descubra a Palavra",
+  next_ingredient: "Qual o Próximo?",
 };
 
 export default function Minigames() {
@@ -17,6 +28,7 @@ export default function Minigames() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [playingGame, setPlayingGame] = useState<Game | null>(null);
+  const [gameStarted, setGameStarted] = useState(false);
   const [bestScores, setBestScores] = useState<Record<number, number>>({});
 
   useEffect(() => {
@@ -52,6 +64,24 @@ export default function Minigames() {
     }
   }
 
+  if (playingGame && !gameStarted) {
+    return (
+      <div className="minigames-page">
+        <GameIntroScreen
+          title={playingGame.title}
+          gameType={playingGame.type}
+          onStart={() => setGameStarted(true)}
+          onExit={() => { setPlayingGame(null); setGameStarted(false); }}
+        />
+      </div>
+    );
+  }
+
+  const handleExitGame = () => {
+    setPlayingGame(null);
+    setGameStarted(false);
+  };
+
   if (playingGame?.type === "memory") {
     const pairs = (playingGame.config?.pairs as { id: number; label: string; emoji: string }[]) ?? [];
     return (
@@ -60,11 +90,108 @@ export default function Minigames() {
           gameId={playingGame.id}
           pairs={pairs}
           bestScore={bestScores[playingGame.id] ?? playingGame.best_score}
-          onComplete={(score, newBest) => {
-            handleComplete(playingGame.id, score, newBest);
-            setPlayingGame(null);
-          }}
-          onExit={() => setPlayingGame(null)}
+          onComplete={(score, newBest) => handleComplete(playingGame.id, score, newBest)}
+          onExit={handleExitGame}
+          onPlayAnother={handleExitGame}
+        />
+      </div>
+    );
+  }
+
+  if (playingGame?.type === "ordering") {
+    const items = (playingGame.config?.items as { id: number; text: string }[]) ?? [];
+    return (
+      <div className="minigames-page">
+        <OrderingGame
+          gameId={playingGame.id}
+          items={items}
+          bestScore={bestScores[playingGame.id] ?? playingGame.best_score}
+          onComplete={(score, newBest) => handleComplete(playingGame.id, score, newBest)}
+          onExit={handleExitGame}
+          onPlayAnother={handleExitGame}
+        />
+      </div>
+    );
+  }
+
+  if (playingGame?.type === "visual_quiz") {
+    const questions = (playingGame.config?.questions as { id: number; question: string; imageUrl: string; options: { text: string; correct: boolean }[] }[]) ?? [];
+    return (
+      <div className="minigames-page">
+        <VisualQuizGame
+          gameId={playingGame.id}
+          questions={questions}
+          bestScore={bestScores[playingGame.id] ?? playingGame.best_score}
+          onComplete={(score, newBest) => handleComplete(playingGame.id, score, newBest)}
+          onExit={handleExitGame}
+          onPlayAnother={handleExitGame}
+        />
+      </div>
+    );
+  }
+
+  if (playingGame?.type === "true_false") {
+    const statements = (playingGame.config?.statements as { id: number; text: string; correct: boolean }[]) ?? [];
+    return (
+      <div className="minigames-page">
+        <TrueFalseGame
+          gameId={playingGame.id}
+          statements={statements}
+          bestScore={bestScores[playingGame.id] ?? playingGame.best_score}
+          onComplete={(score, newBest) => handleComplete(playingGame.id, score, newBest)}
+          onExit={handleExitGame}
+          onPlayAnother={handleExitGame}
+        />
+      </div>
+    );
+  }
+
+  if (playingGame?.type === "matching") {
+    const pairs = (playingGame.config?.pairs as { id: number; left: string; right: string }[]) ?? [];
+    return (
+      <div className="minigames-page">
+        <MatchingGame
+          gameId={playingGame.id}
+          pairs={pairs}
+          bestScore={bestScores[playingGame.id] ?? playingGame.best_score}
+          onComplete={(score, newBest) => handleComplete(playingGame.id, score, newBest)}
+          onExit={handleExitGame}
+          onPlayAnother={handleExitGame}
+        />
+      </div>
+    );
+  }
+
+  if (playingGame?.type === "word_scramble") {
+    const words = (playingGame.config?.words as { id: number; word: string; hint: string }[]) ?? [];
+    return (
+      <div className="minigames-page">
+        <WordScrambleGame
+          gameId={playingGame.id}
+          words={words}
+          bestScore={bestScores[playingGame.id] ?? playingGame.best_score}
+          onComplete={(score, newBest) => handleComplete(playingGame.id, score, newBest)}
+          onExit={handleExitGame}
+          onPlayAnother={handleExitGame}
+        />
+      </div>
+    );
+  }
+
+  if (playingGame?.type === "next_ingredient") {
+    const cfg = playingGame.config as Record<string, unknown>;
+    const recipeName = (cfg.recipeName as string) ?? "Receita";
+    const ingredients = (cfg.ingredients as { id: number; name: string; emoji: string }[]) ?? [];
+    return (
+      <div className="minigames-page">
+        <NextIngredientGame
+          gameId={playingGame.id}
+          recipeName={recipeName}
+          ingredients={ingredients}
+          bestScore={bestScores[playingGame.id] ?? playingGame.best_score}
+          onComplete={(score, newBest) => handleComplete(playingGame.id, score, newBest)}
+          onExit={handleExitGame}
+          onPlayAnother={handleExitGame}
         />
       </div>
     );
@@ -109,7 +236,7 @@ export default function Minigames() {
                 <button
                   type="button"
                   className="minigame-card-play"
-                  onClick={() => setPlayingGame(game)}
+                  onClick={() => { setPlayingGame(game); setGameStarted(false); }}
                   disabled={!game.unlocked}
                 >
                   {game.unlocked ? "Jogar" : "Bloqueado"}

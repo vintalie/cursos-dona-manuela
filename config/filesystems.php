@@ -41,7 +41,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => rtrim(env('APP_URL', 'https://ead-api.dcmmarketingdigital.com.br'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

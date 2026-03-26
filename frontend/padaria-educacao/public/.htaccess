@@ -1,0 +1,12 @@
+Options -MultiViews
+RewriteEngine On
+
+# Nunca reescrever assets, arquivos estáticos ou sw.js
+RewriteRule ^assets/ - [L]
+RewriteRule ^(sw\.js|registerSW\.js|manifest\.webmanifest|favicon\.|pwa-|maskable-|apple-touch) - [L]
+RewriteRule \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|webmanifest|json)$ - [L]
+
+# SPA: rotas não encontradas servem index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]

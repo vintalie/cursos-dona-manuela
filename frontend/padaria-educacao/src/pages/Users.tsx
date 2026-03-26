@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { User } from "@/types";
 import { getUsers, createUser, deleteUser } from "@/services/user.service";
 import { setDocumentTitle } from "@/config/appConfig";
@@ -6,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import ConfirmDeleteDialog from "@/components/ui/ConfirmDeleteDialog";
 
 export default function Users() {
+  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const [usuarios, setUsuarios] = useState<User[]>([]);
   const [deleteUserTarget, setDeleteUserTarget] = useState<User | null>(null);
@@ -96,7 +98,9 @@ export default function Users() {
                 <td>{u.tipo}</td>
                 <td>
                   <div className="flex flex-wrap gap-2">
-                    <button>Editar</button>
+                    <button type="button" onClick={() => navigate(`/usuarios/${u.id}/editar`)}>
+                      Editar
+                    </button>
                     <button
                       className="btn-danger"
                       onClick={() => setDeleteUserTarget(u)}

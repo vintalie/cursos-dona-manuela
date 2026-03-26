@@ -155,7 +155,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -235,7 +235,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -375,7 +375,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -610,7 +610,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -738,7 +738,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -902,7 +902,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -1030,7 +1030,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -1194,7 +1194,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -1322,7 +1322,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -1486,7 +1486,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -1614,7 +1614,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -1778,7 +1778,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []
@@ -1918,7 +1918,7 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          access-control-allow-origin: 'http://localhost:5173'
+          access-control-allow-origin: 'https://ead-api.dcmmarketingdigital.com.br:5173'
           access-control-allow-credentials: 'true'
         description: null
     responseFields: []

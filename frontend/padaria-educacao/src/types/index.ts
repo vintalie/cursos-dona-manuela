@@ -111,3 +111,28 @@ export interface Option {
   text: string;
   is_correct: boolean;
 }
+
+// ========== Media ==========
+export type MediaType = "image" | "video" | "audio" | "document";
+
+export interface Media {
+  id: number;
+  user_id: number;
+  media_category_id?: number | null;
+  filename: string;
+  original_name: string;
+  path: string;
+  url: string;
+  mime_type: string;
+  type: MediaType;
+  size: number;
+  created_at?: string;
+  updated_at?: string;
+  user?: User;
+  media_category?: MediaCategory | null;
+}
+
+export interface MediaCategory {
+  id: number;
+  name: string;
+}

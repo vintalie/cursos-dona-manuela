@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Outlet, Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Suspense, useEffect, useRef, useState, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
+import { Outlet, Link, NavLink, useNavigate, useLocation, useNavigationType } from "react-router-dom";
+import { useAnimatedPresence } from "@/hooks/useAnimatedPresence";
 import {
   User,
   Bell,
@@ -12,18 +14,53 @@ import {
   LayoutList,
   Award,
   Gamepad2,
+  MoreHorizontal,
+  ImageIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import PageLoader from "@/components/ui/PageLoader";
 import NotificationPanel from "@/components/notifications/NotificationPanel";
 import NotificationPermissionPopup from "@/components/notifications/NotificationPermissionPopup";
 import PWAInstallCard from "@/components/PWAInstallCard";
 
 export default function AppLayout() {
-  const { isGerente, logout } = useAuth();
+  const { isGerente, logout, isLoading } = useAuth();
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [openMoreMenu, setOpenMoreMenu] = useState(false);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const [moreDropdownPosition, setMoreDropdownPosition] = useState({ bottom: 0, right: 0 });
   const location = useLocation();
+  const navType = useNavigationType();
+
+  // Animated presence for dropdown, sidebar overlay, and more menu
+  const { mounted: dropdownMounted, closing: dropdownClosing } = useAnimatedPresence(openDropdown, 110);
+  const { mounted: overlayMounted, closing: overlayClosing } = useAnimatedPresence(sidebarOpen, 140);
+  const { mounted: moreMounted, closing: moreClosing } = useAnimatedPresence(openMoreMenu, 110);
+
+  // Page transition: animate only on forward/replace navigation, not on back (POP)
+  const [pageAnimClass, setPageAnimClass] = useState("");
+  const prevPath = useRef(location.pathname);
+  useEffect(() => {
+    if (location.pathname !== prevPath.current) {
+      if (navType === "PUSH" || navType === "REPLACE") {
+        setPageAnimClass("page-enter");
+      }
+      prevPath.current = location.pathname;
+      setOpenMoreMenu(false);
+    }
+  }, [location.pathname, navType]);
+
+  useLayoutEffect(() => {
+    if (openMoreMenu && moreButtonRef.current) {
+      const rect = moreButtonRef.current.getBoundingClientRect();
+      setMoreDropdownPosition({
+        bottom: window.innerHeight - rect.top + 12,
+        right: window.innerWidth - rect.right,
+      });
+    }
+  }, [openMoreMenu]);
 
   const PAGE_TITLES: Record<string, string> = {
     "/dashboard": "Dashboard",
@@ -36,6 +73,8 @@ export default function AppLayout() {
     "/medalhas": "Medalhas",
     "/notificacoes": "Notificações",
     "/criacao": "Criação",
+    "/minigames-gerente": "Minigames",
+    "/midias": "Mídias",
     "/desempenhos": "Desempenhos",
   };
 
@@ -53,16 +92,24 @@ export default function AppLayout() {
     { to: "/meu-desempenho", label: "Meu Desempenho", icon: BarChart3 },
   ];
 
-  const managerItems = [
-    { to: "/usuarios", label: "Usuários", icon: Users },
-    { to: "/cursos", label: "Cursos", icon: BookOpen },
-    { to: "/criacao", label: "Criação", icon: LayoutList },
-    { to: "/medalhas", label: "Medalhas", icon: Award },
-    { to: "/notificacoes", label: "Notificações", icon: Bell },
+  const managerMainNav = [
     { to: "/desempenhos", label: "Desempenhos", icon: BarChart3 },
+    { to: "/criacao", label: "Criação", icon: LayoutList },
+    { to: "/notificacoes", label: "Notificações", icon: Bell },
   ];
 
-  const bottomNavItems = isGerente ? managerItems : employeeItems;
+  const managerMoreItems = [
+    { to: "/usuarios", label: "Usuários", icon: Users },
+    { to: "/cursos", label: "Cursos", icon: BookOpen },
+    { to: "/minigames-gerente", label: "Minigames", icon: Gamepad2 },
+    { to: "/medalhas", label: "Medalhas", icon: Award },
+    { to: "/midias", label: "Mídias", icon: ImageIcon },
+  ];
+
+  const managerAllItems = [...managerMainNav, ...managerMoreItems];
+
+  const bottomNavItems = isGerente ? managerMainNav : employeeItems;
+  const isMoreItemActive = isGerente && managerMoreItems.some((item) => location.pathname === item.to);
 
   return (
     <div className="app-layout">
@@ -82,14 +129,14 @@ export default function AppLayout() {
             >
               <User size={22} />
             </button>
-            {openDropdown && (
+            {dropdownMounted && (
               <>
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setOpenDropdown(false)}
                   aria-hidden
                 />
-                <div className="mobile-user-dropdown">
+                <div className={`mobile-user-dropdown ${dropdownClosing ? "is-closing" : "is-entering"}`}>
                   <div
                     className="dropdown-item"
                     onClick={() => {
@@ -110,9 +157,9 @@ export default function AppLayout() {
       </header>
 
       {/* Sidebar overlay (mobile) */}
-      {sidebarOpen && (
+      {overlayMounted && (
         <div
-          className="sidebar-overlay"
+          className={`sidebar-overlay ${overlayClosing ? "overlay-closing" : "overlay-entering"}`}
           onClick={() => setSidebarOpen(false)}
           aria-hidden
         />
@@ -133,12 +180,9 @@ export default function AppLayout() {
           </div>
           {isGerente ? (
             <nav onClick={() => setSidebarOpen(false)}>
-              <Link to="/usuarios" className="menu-link">Usuários</Link>
-              <Link to="/cursos" className="menu-link">Cursos</Link>
-              <Link to="/criacao" className="menu-link">Criação</Link>
-              <Link to="/medalhas" className="menu-link">Medalhas</Link>
-              <Link to="/notificacoes" className="menu-link">Notificações</Link>
-              <Link to="/desempenhos" className="menu-link">Desempenhos</Link>
+              {managerAllItems.map((item) => (
+                <Link key={item.to} to={item.to} className="menu-link">{item.label}</Link>
+              ))}
             </nav>
           ) : (
             <nav onClick={() => setSidebarOpen(false)}>
@@ -167,8 +211,8 @@ export default function AppLayout() {
                 >
                   <User size={20} />
                 </button>
-                {openDropdown && (
-                  <div className="user-dropdown">
+                {dropdownMounted && (
+                  <div className={`user-dropdown ${dropdownClosing ? "is-closing" : "is-entering"}`}>
                     <div className="dropdown-item" onClick={() => { navigate("/configuracoes"); setOpenDropdown(false); }}>
                       <Settings size={16} /> Configurações
                     </div>
@@ -184,8 +228,15 @@ export default function AppLayout() {
       </aside>
 
       <main className="layout-main">
-        <div className="layout-main-inner">
-          <Outlet />
+        <div
+          className={`layout-main-inner ${pageAnimClass}`}
+          onAnimationEnd={() => setPageAnimClass("")}
+        >
+          <PageLoader loading={isLoading}>
+            <Suspense fallback={<PageLoader loading />}>
+              <Outlet />
+            </Suspense>
+          </PageLoader>
         </div>
       </main>
 
@@ -206,6 +257,54 @@ export default function AppLayout() {
               </NavLink>
             );
           })}
+          {isGerente && (
+            <div className="bottom-nav-item-wrapper">
+              <button
+                ref={moreButtonRef}
+                type="button"
+                className={`bottom-nav-item${isMoreItemActive ? " bottom-nav-item-active" : ""}`}
+                onClick={() => setOpenMoreMenu(!openMoreMenu)}
+                aria-label="Mais opções"
+              >
+                <MoreHorizontal className="bottom-nav-icon" />
+                <span className="bottom-nav-label">Mais</span>
+              </button>
+              {moreMounted &&
+                createPortal(
+                  <>
+                    <div
+                      className="fixed inset-0 z-[45]"
+                      onClick={() => setOpenMoreMenu(false)}
+                      aria-hidden
+                    />
+                    <div
+                      className={`bottom-nav-more-dropdown bottom-nav-more-dropdown--fixed ${moreClosing ? "is-closing" : "is-entering"}`}
+                      style={{
+                        bottom: moreDropdownPosition.bottom,
+                        right: moreDropdownPosition.right,
+                      }}
+                    >
+                      {managerMoreItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = location.pathname === item.to;
+                        return (
+                          <Link
+                            key={item.to}
+                            to={item.to}
+                            className={`bottom-nav-more-item${isActive ? " active" : ""}`}
+                            onClick={() => setOpenMoreMenu(false)}
+                          >
+                            <Icon size={18} />
+                            <span>{item.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </>,
+                  document.body
+                )}
+            </div>
+          )}
         </div>
       </nav>
     </div>

@@ -36,8 +36,10 @@ import {
 import { getCategories, createCategory } from "@/services/category.service";
 import type { Course, Module, Lesson, Assessment, Question } from "@/types";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { showAlert } from "@/contexts/AlertPopupContext";
 import WysiwygEditor from "@/components/ui/WysiwygEditor";
 import ConfirmDeleteDialog from "@/components/ui/ConfirmDeleteDialog";
+import MinigamePickerDialog from "@/components/games/MinigamePickerDialog";
 import type { Category } from "@/types";
 
 type ExpandedForm = "course" | "materia" | "aula" | "avaliacao" | "pergunta" | null;
@@ -85,7 +87,6 @@ export default function ManagerDashboard() {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [expandedForm, setExpandedForm] = useState<ExpandedForm>("course");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ type: "course" | "module" | "lesson" | "assessment" | "question"; id: number; name: string } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -140,11 +141,6 @@ export default function ManagerDashboard() {
     }
     getAssessment(selectedAssessment.id).then(setAssessmentDetail).catch(() => setAssessmentDetail(null));
   }, [selectedAssessment?.id]);
-
-  const showMsg = (type: "error" | "success", text: string) => {
-    setMessage({ type, text });
-    setTimeout(() => setMessage(null), 4000);
-  };
 
   const refreshCourses = () => getCourses().then(setCourses);
   const refreshCourseDetail = () => selectedCourse && getCourse(selectedCourse.id).then(setCourseDetail);
@@ -230,9 +226,9 @@ export default function ManagerDashboard() {
           refreshAssessmentDetail();
           break;
       }
-      showMsg("success", "Excluído com sucesso!");
+      showAlert({ type: "success", message: "Excluído com sucesso!" });
     } catch (err) {
-      showMsg("error", errMsg(err));
+      showAlert({ type: "error", message: errMsg(err) });
     } finally {
       setDeleteLoading(false);
       setDeleteTarget(null);
@@ -260,12 +256,6 @@ export default function ManagerDashboard() {
   return (
     <div className="dashboard">
       <h2 className="page-title mb-5 text-xl font-bold text-foreground">Criação de Conteúdo</h2>
-
-      {message && (
-        <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === "error" ? "bg-destructive/10 text-destructive" : "bg-green-500/10 text-green-700"}`}>
-          {message.text}
-        </div>
-      )}
 
       <div className="creation-grid">
         <aside className="creation-sidebar">
@@ -496,8 +486,8 @@ export default function ManagerDashboard() {
               editCourse={selectedCourse}
               categories={categories}
               onCategoriesChange={setCategories}
-              onSuccess={() => { refreshCourses(); if (selectedCourse) refreshCourseDetail(); showMsg("success", selectedCourse ? "Curso atualizado!" : "Curso criado!"); }}
-              onError={(e) => showMsg("error", errMsg(e))}
+              onSuccess={() => { refreshCourses(); if (selectedCourse) refreshCourseDetail(); showAlert({ type: "success", message: selectedCourse ? "Curso atualizado!" : "Curso criado!" }); }}
+              onError={(e) => showAlert({ type: "error", message: errMsg(e) })}
               loading={loading}
               setLoading={setLoading}
             />
@@ -515,8 +505,8 @@ export default function ManagerDashboard() {
                 courseId={selectedCourse.id}
                 editModule={selectedModule}
                 moduleDetail={moduleDetail}
-                onSuccess={() => { refreshCourseDetail(); showMsg("success", selectedModule ? "Matéria atualizada!" : "Matéria criada!"); }}
-                onError={(e) => showMsg("error", errMsg(e))}
+                onSuccess={() => { refreshCourseDetail(); showAlert({ type: "success", message: selectedModule ? "Matéria atualizada!" : "Matéria criada!" }); }}
+                onError={(e) => showAlert({ type: "error", message: errMsg(e) })}
                 loading={loading}
                 setLoading={setLoading}
               />
@@ -535,8 +525,8 @@ export default function ManagerDashboard() {
                 <CreationAulaForm
                   moduleId={selectedModule.id}
                   editLesson={selectedLesson}
-                  onSuccess={() => { refreshModuleDetail(); showMsg("success", selectedLesson ? "Aula atualizada!" : "Aula criada!"); }}
-                  onError={(e) => showMsg("error", errMsg(e))}
+                  onSuccess={() => { refreshModuleDetail(); showAlert({ type: "success", message: selectedLesson ? "Aula atualizada!" : "Aula criada!" }); }}
+                  onError={(e) => showAlert({ type: "error", message: errMsg(e) })}
                   loading={loading}
                   setLoading={setLoading}
                 />
@@ -559,8 +549,8 @@ export default function ManagerDashboard() {
                   moduleId={selectedModule.id}
                   lessonId={selectedLesson?.id ?? null}
                   editAssessment={selectedAssessment}
-                  onSuccess={() => { refreshModuleDetail(); showMsg("success", selectedAssessment ? "Avaliação atualizada!" : "Avaliação criada!"); }}
-                  onError={(e) => showMsg("error", errMsg(e))}
+                  onSuccess={() => { refreshModuleDetail(); showAlert({ type: "success", message: selectedAssessment ? "Avaliação atualizada!" : "Avaliação criada!" }); }}
+                  onError={(e) => showAlert({ type: "error", message: errMsg(e) })}
                   loading={loading}
                   setLoading={setLoading}
                 />
@@ -580,8 +570,8 @@ export default function ManagerDashboard() {
                 assessmentId={selectedAssessment.id}
                 isModuleLevel={!selectedAssessment.lesson_id}
                 editQuestion={selectedQuestion}
-                onSuccess={() => { refreshAssessmentDetail(); setSelectedQuestion(null); showMsg("success", selectedQuestion ? "Pergunta atualizada!" : "Pergunta adicionada!"); }}
-                onError={(e) => showMsg("error", errMsg(e))}
+                onSuccess={() => { refreshAssessmentDetail(); setSelectedQuestion(null); showAlert({ type: "success", message: selectedQuestion ? "Pergunta atualizada!" : "Pergunta adicionada!" }); }}
+                onError={(e) => showAlert({ type: "error", message: errMsg(e) })}
                 loading={loading}
                 setLoading={setLoading}
               />
@@ -864,6 +854,7 @@ function CreationAulaForm({
   const [title, setTitle] = useState(editLesson?.title ?? "");
   const [position, setPosition] = useState(editLesson?.position != null ? String(editLesson.position) : "");
   const [content, setContent] = useState(editLesson?.content ?? editLesson?.description ?? "");
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
     if (editLesson) {
@@ -874,6 +865,12 @@ function CreationAulaForm({
       setTitle(""); setPosition(""); setContent("");
     }
   }, [editLesson?.id]);
+
+  function handleInsertMinigame(gameId: number) {
+    const src = `${window.location.origin}/minigame/play/${gameId}`;
+    const iframeHtml = `<iframe src="${src}" width="100%" height="420" frameborder="0" allowfullscreen="true" style="border:none;border-radius:8px"></iframe>`;
+    setContent((prev) => prev + iframeHtml);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -907,8 +904,19 @@ function CreationAulaForm({
       <label className="block text-sm font-medium mb-2">Posição na matéria</label>
       <input placeholder="Posição (0, 1, 2...)" type="number" min={0} value={position} onChange={(e) => setPosition(e.target.value)} />
       <label className="block text-sm font-medium mb-2 mt-2">Conteúdo da Aula</label>
-      <WysiwygEditor value={content} onChange={setContent} placeholder="Conteúdo da aula..." />
+      <WysiwygEditor
+        value={content}
+        onChange={setContent}
+        placeholder="Conteúdo da aula..."
+        onInsertMinigame={() => setPickerOpen(true)}
+      />
       <button type="submit" disabled={loading}>{loading ? (editLesson ? "Salvando..." : "Criando...") : (editLesson ? "Salvar alterações" : "Criar Aula")}</button>
+
+      <MinigamePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onSelect={handleInsertMinigame}
+      />
     </form>
   );
 }

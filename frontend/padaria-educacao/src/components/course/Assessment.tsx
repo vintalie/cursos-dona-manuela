@@ -19,8 +19,14 @@ interface AssessmentProps {
   onSubmit: (score: number) => Promise<void>;
 }
 
+// Uma questão é de resposta escrita quando não possui opções de alternativa
+function isTextQuestion(q: Question): boolean {
+  return !q.options || q.options.length === 0;
+}
+
 export default function AssessmentComponent({ assessmentId, title, questions, maxScore, minScore, isCompleted = false, onSubmit }: AssessmentProps) {
   const [answers, setAnswers] = useState<Record<number, number[]>>({});
+  const [textAnswers, setTextAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ correct: number; score: number; total: number; maxScore: number; minScore: number | null } | null>(null);
@@ -31,6 +37,7 @@ export default function AssessmentComponent({ assessmentId, title, questions, ma
       setSubmitted(false);
       setResult(null);
       setAnswers({});
+      setTextAnswers({});
       setShowResultDialog(false);
     }
   }, [assessmentId]);
@@ -48,19 +55,24 @@ export default function AssessmentComponent({ assessmentId, title, questions, ma
   };
 
   const allAnswered = questions.every((q) => {
+    if (isTextQuestion(q)) {
+      return (textAnswers[q.id] ?? "").trim().length > 0;
+    }
     const a = answers[q.id];
     return a && a.length > 0;
   });
 
   const calculateScore = () => {
     let correct = 0;
-    questions.forEach((q) => {
+    // Somente questões de alternativas são corrigidas automaticamente
+    const scorableQuestions = questions.filter((q) => !isTextQuestion(q));
+    scorableQuestions.forEach((q) => {
       const selected = answers[q.id] ?? [];
       const correctIds = (q.options ?? []).filter((o) => o.is_correct).map((o) => o.id);
       const allCorrect = correctIds.length > 0 && selected.length === correctIds.length && selected.every((id) => correctIds.includes(id));
       if (allCorrect) correct++;
     });
-    return { correct, total: questions.length };
+    return { correct, total: scorableQuestions.length };
   };
 
   async function handleSubmit() {
@@ -103,18 +115,42 @@ export default function AssessmentComponent({ assessmentId, title, questions, ma
         {questions.map((q) => (
           <div key={q.id} className="mb-4">
             <p className="font-medium mb-2">{q.text}</p>
-            <div className="options">
-              {(q.options ?? []).map((opt: Option) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  className={`option-btn ${(answers[q.id] ?? []).includes(opt.id) ? "selected" : ""}`}
-                  onClick={() => toggleOption(q.id, opt.id, q.is_multiple_choice ?? false)}
-                >
-                  {opt.label}. {opt.text}
-                </button>
-              ))}
-            </div>
+
+            {isTextQuestion(q) ? (
+              /* Questão de resposta escrita */
+              <div className="answer-text-block">
+                <textarea
+                  className="answer-text-input"
+                  placeholder="Digite sua resposta aqui..."
+                  value={textAnswers[q.id] ?? ""}
+                  onChange={(e) =>
+                    setTextAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+                  }
+                  disabled={submitted || isCompleted}
+                />
+                {(submitted || isCompleted) && q.answer_text && (
+                  <div className="mt-3 p-2 rounded-lg bg-primary/5 border border-primary/20 text-sm">
+                    <span className="font-medium text-primary">Resposta esperada: </span>
+                    <span className="text-foreground">{q.answer_text}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Questão de alternativas (múltipla escolha ou única) */
+              <div className="options">
+                {(q.options ?? []).map((opt: Option) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    className={`option-btn ${(answers[q.id] ?? []).includes(opt.id) ? "selected" : ""}`}
+                    onClick={() => toggleOption(q.id, opt.id, q.is_multiple_choice ?? false)}
+                    disabled={submitted || isCompleted}
+                  >
+                    {opt.label}. {opt.text}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -131,7 +167,7 @@ export default function AssessmentComponent({ assessmentId, title, questions, ma
           <p className="font-medium text-muted-foreground">
             ✅ Avaliação concluída
           </p>
-          {result && (
+          {result && result.total > 0 && (
             <p className="text-sm">
               Você acertou {result.correct} de {result.total} questões.
               {result.maxScore != null && (
@@ -152,19 +188,27 @@ export default function AssessmentComponent({ assessmentId, title, questions, ma
               <div className="space-y-3 pt-2">
                 {result && (
                   <>
-                    <p className="text-base font-medium text-foreground">
-                      Você acertou <span className="text-primary">{result.correct}</span> de{" "}
-                      <span className="text-primary">{result.total}</span> questões.
-                    </p>
-                    <p className="text-base">
-                      Nota obtida: <span className="font-semibold">{result.score}</span>
-                      {result.maxScore != null && (
-                        <span className="text-muted-foreground"> de {result.maxScore} pontos</span>
-                      )}
-                    </p>
-                    {result.minScore != null && (
-                      <p className={result.score >= result.minScore ? "text-green-600 font-medium" : "text-destructive font-medium"}>
-                        {result.score >= result.minScore ? "✓ Aprovado!" : `✗ Reprovado (nota mínima: ${result.minScore})`}
+                    {result.total > 0 ? (
+                      <>
+                        <p className="text-base font-medium text-foreground">
+                          Você acertou <span className="text-primary">{result.correct}</span> de{" "}
+                          <span className="text-primary">{result.total}</span> questões.
+                        </p>
+                        <p className="text-base">
+                          Nota obtida: <span className="font-semibold">{result.score}</span>
+                          {result.maxScore != null && (
+                            <span className="text-muted-foreground"> de {result.maxScore} pontos</span>
+                          )}
+                        </p>
+                        {result.minScore != null && (
+                          <p className={result.score >= result.minScore ? "text-green-600 font-medium" : "text-destructive font-medium"}>
+                            {result.score >= result.minScore ? "✓ Aprovado!" : `✗ Reprovado (nota mínima: ${result.minScore})`}
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-base text-muted-foreground">
+                        Suas respostas foram registradas. A correção será feita pelo instrutor.
                       </p>
                     )}
                   </>

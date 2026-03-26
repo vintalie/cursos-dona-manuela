@@ -1,0 +1,1 @@
+import{h as t}from"./index-D9cHVwAi.js";async function s(){const a=await t.get("/categories");return Array.isArray(a.data)?a.data:[]}async function o(a){return(await t.post("/categories",{name:a.trim()})).data}async function i(a){await t.delete(`/categories/${a}`)}export{o as c,i as d,s as g};

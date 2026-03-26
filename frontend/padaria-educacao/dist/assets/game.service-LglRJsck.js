@@ -1,0 +1,1 @@
+import{h as t}from"./index-D9cHVwAi.js";async function r(a){return(await t.get("/games",{params:a})).data}async function c(a){return(await t.get(`/games/${a}`)).data}async function o(a,e){return(await t.post(`/games/${a}/complete`,e)).data}export{c as a,o as c,r as g};

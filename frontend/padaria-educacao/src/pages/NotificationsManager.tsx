@@ -3,6 +3,7 @@ import { setDocumentTitle } from "@/config/appConfig";
 import { broadcastNotification } from "@/services/notification.service";
 import { getUsers } from "@/services/user.service";
 import type { User } from "@/types";
+import { showAlert } from "@/contexts/AlertPopupContext";
 
 export default function NotificationsManager() {
   const [users, setUsers] = useState<User[]>([]);
@@ -22,7 +23,6 @@ export default function NotificationsManager() {
     e.preventDefault();
     if (!title.trim() || !message.trim()) return;
     setLoading(true);
-    setMessageFeedback(null);
     try {
       const { count } = await broadcastNotification({
         title: title.trim(),
@@ -30,12 +30,12 @@ export default function NotificationsManager() {
         user_ids: sendToAll ? undefined : selectedUserIds,
         send_to_all: sendToAll,
       });
-      setMessageFeedback({ type: "success", text: `Notificação enviada para ${count} usuário(s)!` });
+      showAlert({ type: "success", message: `Notificação enviada para ${count} usuário(s)!` });
       setTitle("");
       setMessage("");
       setSelectedUserIds([]);
     } catch {
-      setMessageFeedback({ type: "error", text: "Erro ao enviar notificação." });
+      showAlert({ type: "error", message: "Erro ao enviar notificação." });
     } finally {
       setLoading(false);
     }
@@ -52,16 +52,6 @@ export default function NotificationsManager() {
   return (
     <div>
       <h2 className="page-title mb-5 text-xl font-bold text-foreground">Enviar Notificação</h2>
-
-      {messageFeedback && (
-        <div
-          className={`mb-4 p-3 rounded-lg text-sm ${
-            messageFeedback.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-          }`}
-        >
-          {messageFeedback.text}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
         <div>

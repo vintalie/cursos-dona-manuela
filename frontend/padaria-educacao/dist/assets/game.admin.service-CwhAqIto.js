@@ -1,0 +1,1 @@
+import{h as e}from"./index-D9cHVwAi.js";async function r(){return(await e.get("/games/admin")).data.games}async function c(a){return(await e.post("/games",a)).data}async function i(a,t){return(await e.put(`/games/${a}`,t)).data}async function m(a){await e.delete(`/games/${a}`)}export{c,m as d,r as l,i as u};

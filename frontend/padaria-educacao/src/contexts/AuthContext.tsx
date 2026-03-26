@@ -2,6 +2,25 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from "
 import type { User } from "@/types";
 import { getMe, logoutApi } from "@/services/auth.service";
 
+const USER_CACHE_KEY = "user";
+
+function getCachedUser(): User | null {
+  try {
+    const raw = localStorage.getItem(USER_CACHE_KEY);
+    return raw ? (JSON.parse(raw) as User) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedUser(user: User | null) {
+  if (user) {
+    localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(USER_CACHE_KEY);
+  }
+}
+
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -16,24 +35,47 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(getCachedUser);
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [isLoading, setIsLoading] = useState(true);
 
+  const setUser = (u: User | null) => {
+    setUserState(u);
+    setCachedUser(u);
+  };
+
   useEffect(() => {
     async function loadUser() {
-      if (token) {
-        try {
-          const userData = await getMe();
-          setUser(userData);
-        } catch {
-          localStorage.removeItem("token");
-          setToken(null);
-        }
+      if (!token) {
+        setIsLoading(false);
+        return;
       }
-      setIsLoading(false);
+
+      try {
+        const userData = await getMe();
+        setUser(userData);
+      } catch (err) {
+        const axiosErr = err as { response?: { status?: number }; code?: string };
+        const isNetworkError = !axiosErr?.response && axiosErr?.code === "ERR_NETWORK";
+        const isAuthError = axiosErr?.response?.status === 401;
+
+        if (isAuthError) {
+          // api.ts interceptor already cleared the token + redirected;
+          // mirror the state so React is in sync.
+          setToken(null);
+          setUser(null);
+        } else if (isNetworkError) {
+          // Offline: keep the token and use the cached user so the app stays open.
+          // The user will re-validate automatically when connectivity is restored.
+        } else {
+          // Unexpected server error — keep token, cached user stays as-is.
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
     loadUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const loginStore = (newToken: string, userData: User) => {
@@ -46,11 +88,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await logoutApi();
     } catch {
-      console.error("Erro ao deslogar");
+      // Proceed with local logout even if the server call fails
     } finally {
-      localStorage.clear();
+      localStorage.removeItem("token");
+      localStorage.removeItem(USER_CACHE_KEY);
       setToken(null);
-      setUser(null);
+      setUserState(null);
     }
   };
 

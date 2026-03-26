@@ -130,7 +130,7 @@ createRoot(document.getElementById('root')!).render(
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost/api", // ajuste se necessário
+  baseURL: "https://ead-api.dcmmarketingdigital.com.br/api", // ajuste se necessário
 });
 
 api.interceptors.request.use((config) => {
@@ -1921,7 +1921,7 @@ export async function logout() {
     const token = localStorage.getItem("token");
 
     await axios.post(
-      "http://localhost:8000/api/auth/logout",
+      "https://ead-api.dcmmarketingdigital.com.br:8000/api/auth/logout",
       {},
       {
         headers: {
@@ -8260,7 +8260,7 @@ export default function Users() {
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost/api",
+  baseURL: "https://ead-api.dcmmarketingdigital.com.br/api",
 });
 
 api.interceptors.request.use((config) => {
@@ -10938,7 +10938,7 @@ info:
   version: 1.0.0
 servers:
   -
-    url: 'http://localhost'
+    url: 'https://ead-api.dcmmarketingdigital.com.br'
 tags:
   -
     name: Endpoints

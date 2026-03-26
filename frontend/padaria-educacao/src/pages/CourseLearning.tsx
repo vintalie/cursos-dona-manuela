@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import CourseSidebar from "@/components/course/CourseSidebar";
 import LessonContent from "@/components/course/LessonContent";
@@ -19,6 +19,18 @@ export default function CourseLearning() {
   const [enrolling, setEnrolling] = useState(false);
   const [error, setError] = useState(false);
   const [activeContent, setActiveContent] = useState<string>("");
+
+  // Refs com sempre o valor mais recente — sem entrar em dependency arrays de effects
+  const courseRef = useRef<CourseData | null>(null);
+  const activeContentRef = useRef<string>("");
+  const courseIdRef = useRef<string | undefined>(id);
+  // Aulas cuja conclusão foi enviada à API mas ainda não retornou
+  const pendingLessonIds = useRef<Set<number>>(new Set());
+
+  // Mantém os refs sincronizados a cada render
+  courseRef.current = course;
+  activeContentRef.current = activeContent;
+  courseIdRef.current = id;
 
   useEffect(() => {
     setDocumentTitle(id ? `Curso ${id}` : "Curso");
@@ -47,25 +59,34 @@ export default function CourseLearning() {
     fetchCourse();
   }, [id]);
 
+  // Reporta ao servidor SOMENTE quando o usuário sai da página do curso (unmount).
+  // Dependências vazias [] garantem que o cleanup nunca roda ao trocar de aula/avaliação.
+  // Todos os valores necessários são lidos via refs para evitar closures desatualizados.
   useEffect(() => {
     return () => {
-      if (!course?.is_enrolled || !activeContent || !id) return;
-      const [type, idStr] = activeContent.split("-");
+      const c = courseRef.current;
+      const content = activeContentRef.current;
+      const courseId = courseIdRef.current;
+      if (!c?.is_enrolled || !content || !courseId) return;
+      const [type, idStr] = content.split("-");
       const itemId = parseInt(idStr, 10);
-      const completedLessons = course.completed_lesson_ids ?? [];
-      const completedAssess = course.completed_assessment_ids ?? [];
+      const completedLessons = c.completed_lesson_ids ?? [];
+      const completedAssess = c.completed_assessment_ids ?? [];
       const isIncomplete =
-        (type === "lesson" && !completedLessons.includes(itemId)) ||
+        (type === "lesson" && !completedLessons.includes(itemId) && !pendingLessonIds.current.has(itemId)) ||
         (type === "assessment" && !completedAssess.includes(itemId));
       if (isIncomplete) {
-        const itemName = type === "lesson" ? findLesson(course, itemId)?.title : findAssessment(course, itemId)?.title;
+        const itemName = type === "lesson"
+          ? findLesson(c, itemId)?.title
+          : findAssessment(c, itemId)?.title;
         reportLeftIncomplete({
           context: `Você saiu sem concluir ${type === "lesson" ? "a aula" : "a avaliação"}: ${itemName ?? "conteúdo"}`,
-          course_id: course.id,
+          course_id: c.id,
         }).catch(() => {});
       }
     };
-  }, [course, activeContent, id]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // [] = cleanup roda APENAS no unmount (usuário sai da página do curso)
 
   async function handleIniciarCurso() {
     if (!id || !course) return;
@@ -122,6 +143,9 @@ export default function CourseLearning() {
 
   async function handleLessonViewed(lessonId: number) {
     if (!id || !course) return;
+    // Marca como pendente antes da chamada: evita falso "saiu sem terminar"
+    // caso o usuário navegue para outra aula antes da API responder
+    pendingLessonIds.current.add(lessonId);
     try {
       await completeLesson(id, lessonId);
       setCourse((prev) => {
@@ -135,7 +159,8 @@ export default function CourseLearning() {
         return next;
       });
     } catch {
-      /* ignore */
+      // Em caso de erro, remove da lista de pendentes para não suprimir um reporte legítimo
+      pendingLessonIds.current.delete(lessonId);
     }
   }
 

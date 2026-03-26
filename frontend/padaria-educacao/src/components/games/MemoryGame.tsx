@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { completeGame } from "@/services/game.service";
-import { toast } from "sonner";
+import { showAlert } from "@/contexts/AlertPopupContext";
+import GameResultActions from "./GameResultActions";
 
 interface Pair {
   id: number;
@@ -14,6 +15,7 @@ interface MemoryGameProps {
   bestScore: number;
   onComplete: (score: number, newBest: boolean) => void;
   onExit: () => void;
+  onPlayAnother?: () => void;
 }
 
 interface Card {
@@ -38,6 +40,7 @@ export default function MemoryGame({
   bestScore,
   onComplete,
   onExit,
+  onPlayAnother,
 }: MemoryGameProps) {
   const [cards, setCards] = useState<Card[]>([]);
   const [flipped, setFlipped] = useState<Set<string>>(new Set());
@@ -46,6 +49,7 @@ export default function MemoryGame({
   const [moves, setMoves] = useState(0);
   const [startTime] = useState(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
   const initCards = useCallback(() => {
     const allCards: Card[] = [];
@@ -68,6 +72,7 @@ export default function MemoryGame({
     setMatched(new Set());
     setLastFlipped(null);
     setMoves(0);
+    setShowResult(false);
   }, [pairs]);
 
   useEffect(() => {
@@ -90,16 +95,14 @@ export default function MemoryGame({
     })
       .then((res) => {
         onComplete(res.best_score, res.new_best);
-        if (res.new_best) {
-          toast.success("Novo recorde! Parabéns!");
-        } else {
-          toast.success("Parabéns! Você completou o jogo!");
-        }
       })
       .catch(() => {
-        toast.error("Erro ao salvar o resultado. Tente novamente.");
+        showAlert({ type: "error", message: "Erro ao salvar o resultado. Tente novamente." });
       })
-      .finally(() => setIsSubmitting(false));
+      .finally(() => {
+        setIsSubmitting(false);
+        setShowResult(true);
+      });
   }, [isComplete, gameId, maxScore, moves, onComplete, startTime]);
 
   function handleCardClick(card: Card) {
@@ -114,7 +117,7 @@ export default function MemoryGame({
       setMoves((m) => m + 1);
       if (firstCard && firstCard.pairId === card.pairId) {
         setMatched((prev) => new Set([...prev, card.pairId]));
-        setFlipped(newFlipped);
+        setFlipped(new Set());
         setLastFlipped(null);
       } else {
         setFlipped(newFlipped);
@@ -132,6 +135,25 @@ export default function MemoryGame({
       setFlipped(newFlipped);
       setLastFlipped(card.id);
     }
+  }
+
+  if (showResult) {
+    const won = true; // Memory: complete = win
+    return (
+      <div className="memory-game game-result-screen">
+        <span className={won ? "game-result-badge won" : "game-result-badge lost"}>
+          {won ? "Vitória!" : "Tente novamente"}
+        </span>
+        <p className="text-muted-foreground mt-2">
+          Parabéns! Você encontrou todos os pares em {moves} movimentos.
+        </p>
+        <GameResultActions
+          onPlayAgain={initCards}
+          onPlayAnother={onPlayAnother}
+          onBack={onExit}
+        />
+      </div>
+    );
   }
 
   return (

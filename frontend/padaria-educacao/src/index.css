@@ -47,6 +47,9 @@
     --sidebar-accent-foreground: 210 20% 95%;
     --sidebar-border: 220 20% 25%;
     --sidebar-ring: 0 60% 45%;
+
+    /* Layout metrics — used for consistent spacing across breakpoints */
+    --topbar-height: 56px;
   }
 }
 
@@ -58,20 +61,42 @@
     box-sizing: border-box;
   }
 
+  html {
+    overflow-x: auto;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', 'Segoe UI', sans-serif;
+    /* Prevent font inflation on landscape rotate */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Remove tap highlight and prevent 300ms click delay on all interactive elements */
+  button,
+  a,
+  [role="button"],
+  label,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
 /* ===== LOGIN ===== */
 .login-container {
-  @apply flex justify-center items-center min-h-screen p-5;
+  @apply flex justify-center items-center min-h-screen p-6;
+  min-width: 0;
 }
 
 .login-box {
   @apply bg-card p-8 rounded-xl w-full max-w-md;
   box-shadow: 0 8px 30px hsl(var(--foreground) / 0.08);
+  overflow: visible;
+  margin: 0 4px;
 }
 
 .login-box h2 {
@@ -81,9 +106,17 @@
 .login-box input {
   @apply w-full p-3 mb-4 border border-input rounded-lg bg-background text-foreground;
 }
+.login-box input:focus {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
 
 .login-box button {
   @apply w-full p-3 border-none bg-primary text-primary-foreground rounded-lg cursor-pointer font-semibold transition-all;
+}
+.login-box button:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
 
 .login-box button:hover {
@@ -91,8 +124,129 @@
   transform: translateY(-1px);
 }
 
-.error {
-  @apply text-destructive mb-3 text-sm;
+/* Slide animation entre etapas — overflow-visible + padding para evitar corte de outline/focus */
+.login-slide-wrap {
+  @apply min-h-[120px];
+  overflow: visible;
+  padding: 0 6px;
+}
+
+.login-slide-content {
+  animation: login-slide-in-from-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.login-slide-content.login-slide-prev {
+  animation-name: login-slide-in-from-left;
+}
+
+@keyframes login-slide-in-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes login-slide-in-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Texto de aviso destacado */
+.login-warning-text {
+  @apply mb-4 p-3 rounded-lg font-medium text-sm;
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary) / 0.3);
+}
+
+.login-email-display {
+  @apply mb-3 px-3 py-2 rounded-lg font-medium text-sm;
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+/* Botões lado a lado — responsivo */
+.login-buttons-row {
+  @apply flex flex-wrap gap-2 mt-1;
+}
+
+.login-buttons-row .login-btn-primary {
+  flex: 1 1 0;
+  min-width: 120px;
+}
+
+.login-buttons-row .login-back-btn {
+  flex: 0 1 auto;
+  min-width: 100px;
+  @apply w-auto;
+}
+
+.login-back-btn {
+  @apply p-3 border border-input bg-background text-foreground rounded-lg cursor-pointer font-medium text-sm transition-all;
+}
+.login-back-btn:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.login-back-btn:hover:not(:disabled) {
+  @apply bg-muted;
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    @apply p-3;
+  }
+  .login-box {
+    @apply p-5;
+  }
+  .login-buttons-row {
+    @apply flex-col;
+  }
+  .login-buttons-row .login-btn-primary,
+  .login-buttons-row .login-back-btn {
+    @apply w-full min-w-0;
+  }
+}
+
+.login-divider {
+  @apply flex items-center gap-3 my-4;
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  @apply flex-1 h-px bg-border;
+}
+.login-divider span {
+  @apply text-xs text-muted-foreground uppercase tracking-wider;
+}
+
+/* Sobrescreve .login-box button — maior especificidade */
+.login-box .login-google-btn {
+  @apply w-full p-3 rounded-lg font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all;
+  background: white;
+  border: 3px solid hsl(var(--destructive));
+  color: black;
+}
+.login-box .login-google-btn:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.login-box .login-google-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* ===== EMPTY STATE / ERROR STATE ===== */
@@ -111,7 +265,7 @@
 
 .empty-state-icon.empty {
   background: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--foreground));
 }
 
 .empty-state-title {
@@ -135,6 +289,17 @@
 /* ===== LAYOUT ===== */
 .app-layout {
   @apply flex min-h-screen;
+}
+
+/* Quando um Dialog/Modal está aberto, o scroll lock no body quebra o sidebar.
+   Usar position: fixed garante que ele ocupe toda a altura da viewport. */
+body[data-scroll-locked] .layout-sidebar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
 }
 
 .layout-sidebar {
@@ -210,7 +375,9 @@
 
 .bottom-nav-item {
   @apply flex flex-col items-center justify-center py-2 text-xs text-muted-foreground;
-  flex: 0 0 33.3333%;
+  /* flex: 1 distributes items equally regardless of count (4 employee / 6 manager) */
+  flex: 1 1 0;
+  min-width: 3rem;
 }
 
 .bottom-nav-item-active {
@@ -218,11 +385,65 @@
 }
 
 .bottom-nav-icon {
-  @apply mb-1;
+  @apply mb-1 flex-shrink-0;
 }
 
 .bottom-nav-label {
-  @apply truncate max-w-[7rem];
+  /* max-w-full ensures truncation respects the flex item width */
+  @apply truncate max-w-full text-center px-0.5;
+}
+
+.bottom-nav-item-wrapper {
+  @apply relative;
+  flex: 1 1 0;
+  min-width: 3rem;
+}
+
+.bottom-nav-item-wrapper .bottom-nav-item {
+  @apply w-full m-0 min-w-0 rounded-none;
+  background: transparent !important;
+}
+
+.bottom-nav-item-wrapper button.bottom-nav-item {
+  @apply border-none;
+}
+
+.bottom-nav-item-wrapper button.bottom-nav-item:hover,
+.bottom-nav-item-wrapper button.bottom-nav-item:focus {
+  opacity: 1;
+  background: transparent !important;
+}
+
+.bottom-nav-more-dropdown {
+  @apply absolute z-50 rounded-xl border border-border bg-card shadow-lg;
+  bottom: calc(100% + 0.75rem);
+  right: 0;
+  min-width: 180px;
+  padding: 0.5rem 0;
+  animation: dropdown-enter 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: bottom right;
+}
+
+.bottom-nav-more-dropdown--fixed {
+  position: fixed;
+  z-index: 50;
+}
+
+.bottom-nav-more-dropdown.is-closing {
+  animation: dropdown-exit 0.1s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.bottom-nav-more-item {
+  @apply flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground transition-colors;
+}
+
+.bottom-nav-more-item:hover,
+.bottom-nav-more-item:active {
+  @apply bg-muted text-foreground;
+}
+
+.bottom-nav-more-item.active {
+  @apply text-primary font-medium;
 }
 
 /* ===== SIDEBAR BOTTOM ===== */
@@ -511,7 +732,7 @@ button:hover {
 }
 
 .memory-card-front {
-  @apply bg-primary/20 text-primary font-bold text-2xl;
+  @apply bg-primary/20 text-foreground font-bold text-2xl;
 }
 
 .memory-card-back {
@@ -565,6 +786,736 @@ button:hover {
   opacity: 0.9;
 }
 
+/* ===== MINIGAMES MANAGER (gerente) ===== */
+.minigames-manager-page {
+  @apply w-full;
+}
+
+.minigames-manager-header {
+  @apply flex items-center justify-between mb-6 flex-wrap gap-3;
+}
+
+.minigames-manager-create-btn {
+  @apply flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-medium text-sm;
+}
+.minigames-manager-create-btn:hover { opacity: 0.9; }
+
+.minigames-manager-grid {
+  @apply grid gap-4;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.minigame-manager-card {
+  @apply bg-card rounded-xl border border-border p-5 flex flex-col justify-between transition-all;
+}
+.minigame-manager-card:hover {
+  box-shadow: 0 4px 16px hsl(var(--foreground) / 0.08);
+}
+
+.minigame-manager-card-top {
+  @apply mb-4;
+}
+.minigame-manager-card-title {
+  @apply font-semibold text-foreground mb-2;
+}
+.minigame-manager-card-meta {
+  @apply flex items-center gap-2 mb-2 flex-wrap;
+}
+.minigame-manager-card-desc {
+  @apply text-sm text-muted-foreground line-clamp-2;
+}
+
+.minigame-type-chip {
+  @apply text-xs font-medium px-2 py-0.5 rounded-full;
+}
+
+.minigame-manager-card-actions {
+  @apply flex items-center gap-2 pt-3 border-t border-border;
+}
+
+.minigame-action-btn {
+  @apply flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-muted text-foreground;
+  transition: background-color 0.15s ease;
+}
+.minigame-action-btn:hover { @apply bg-muted/80; }
+.minigame-action-btn--danger { @apply text-destructive; }
+.minigame-action-btn--danger:hover { @apply bg-destructive/10; }
+
+/* ===== MINIGAME EDITOR DIALOG ===== */
+.minigame-editor-dialog {
+  @apply max-w-2xl max-h-[85vh] overflow-y-auto;
+}
+.minigame-editor-form {
+  @apply flex flex-col gap-4;
+}
+.minigame-editor-fields {
+  @apply flex flex-col gap-3;
+}
+.minigame-editor-input {
+  @apply w-full px-3 py-2 rounded-lg border border-input bg-background text-sm;
+}
+.minigame-editor-select {
+  @apply w-full px-3 py-2 rounded-lg border border-input bg-background text-sm;
+}
+.minigame-editor-config {
+  @apply mt-2;
+}
+.minigame-editor-btn-cancel {
+  @apply px-4 py-2 text-sm rounded-lg border border-input bg-background text-foreground;
+}
+.minigame-editor-btn-save {
+  @apply px-4 py-2 text-sm rounded-lg bg-primary text-primary-foreground font-medium;
+}
+.minigame-editor-btn-save:disabled { opacity: 0.6; }
+
+.minigame-config-section {
+  @apply flex flex-col gap-2;
+}
+.minigame-config-title {
+  @apply text-sm font-medium text-foreground mb-1;
+}
+.minigame-config-row {
+  @apply flex items-center gap-2;
+}
+.minigame-config-input {
+  @apply px-3 py-2 rounded-lg border border-input bg-background text-sm;
+}
+.minigame-config-number {
+  @apply text-sm font-medium text-muted-foreground w-6 text-center shrink-0;
+}
+.minigame-config-remove {
+  @apply p-1.5 rounded text-destructive/70 shrink-0;
+}
+.minigame-config-remove:hover { @apply bg-destructive/10 text-destructive; }
+.minigame-config-remove:disabled { @apply opacity-30 pointer-events-none; }
+.minigame-config-move {
+  @apply p-1.5 rounded text-muted-foreground shrink-0;
+}
+.minigame-config-move:hover { @apply bg-muted text-foreground; }
+.minigame-config-move:disabled { @apply opacity-30 pointer-events-none; }
+.minigame-config-add {
+  @apply flex items-center gap-1.5 text-sm font-medium text-primary mt-1 px-2 py-1.5 rounded-lg;
+}
+.minigame-config-add:hover { @apply bg-muted; }
+
+.minigame-quiz-question {
+  @apply p-3 rounded-lg border border-input bg-background/50 mb-3;
+}
+.minigame-quiz-question-header {
+  @apply flex items-center justify-between mb-2;
+}
+.minigame-quiz-options {
+  @apply flex flex-col gap-1.5 mt-2;
+}
+.minigame-quiz-option {
+  @apply flex items-center gap-2;
+}
+.minigame-quiz-radio {
+  @apply flex items-center shrink-0;
+}
+
+/* ===== MINIGAME PICKER DIALOG ===== */
+.minigame-picker-dialog {
+  @apply max-w-md;
+}
+.minigame-picker-list {
+  @apply flex flex-col gap-1 max-h-64 overflow-y-auto;
+}
+.minigame-picker-item {
+  @apply w-full text-left px-3 py-2.5 rounded-lg flex flex-col transition-colors;
+}
+.minigame-picker-item:hover { @apply bg-muted; }
+.minigame-picker-item-info {
+  @apply flex items-center gap-2;
+}
+.minigame-picker-item-title {
+  @apply text-sm font-medium text-foreground;
+}
+.minigame-picker-item-type {
+  @apply text-xs text-muted-foreground;
+}
+.minigame-picker-item-desc {
+  @apply text-xs text-muted-foreground mt-0.5 truncate;
+}
+
+/* ===== ORDERING GAME ===== */
+.ordering-game {
+  @apply w-full max-w-xl mx-auto;
+}
+.ordering-game-header {
+  @apply flex items-center justify-between mb-4 flex-wrap gap-3;
+}
+.ordering-game-stats {
+  @apply flex gap-4 text-sm text-muted-foreground;
+}
+.ordering-game-actions {
+  @apply flex items-center gap-2;
+}
+.ordering-game-reset {
+  @apply flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg bg-muted text-foreground;
+}
+.ordering-game-reset:hover { @apply bg-muted/80; }
+.ordering-game-exit {
+  @apply text-sm px-3 py-1.5 rounded-lg bg-muted text-foreground;
+}
+.ordering-game-exit:hover { @apply bg-muted/80; }
+.ordering-game-instruction {
+  @apply text-sm text-muted-foreground mb-4;
+}
+
+.ordering-selected-area {
+  @apply mb-4 p-4 rounded-xl bg-muted/30 border border-border;
+}
+.ordering-area-title {
+  @apply text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider;
+}
+.ordering-selected-list {
+  @apply flex flex-col gap-1.5;
+}
+.ordering-selected-item {
+  @apply flex items-center gap-3 px-3 py-2 rounded-lg bg-card border border-border text-sm text-foreground transition-colors;
+}
+.ordering-selected-item.correct {
+  @apply border-green-500 bg-green-500/10 text-green-700;
+}
+.ordering-selected-item.wrong {
+  @apply border-destructive bg-destructive/10 text-destructive;
+}
+.ordering-number {
+  @apply font-bold text-primary min-w-[1.5rem] text-center;
+}
+.ordering-text {
+  @apply flex-1 text-foreground;
+}
+.ordering-undo-btn {
+  @apply text-xs text-foreground mt-2 px-2 py-1 rounded cursor-pointer border-none;
+  background: transparent !important;
+}
+.ordering-undo-btn:hover {
+  @apply bg-muted/70;
+}
+
+.ordering-available-area {
+  @apply mb-4;
+}
+.ordering-available-list {
+  @apply flex flex-wrap gap-2;
+}
+.ordering-available-item {
+  @apply px-4 py-2.5 rounded-lg bg-card border border-border text-sm font-medium text-foreground transition-all;
+}
+.ordering-available-item:hover {
+  @apply border-primary bg-primary/5;
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.15);
+}
+
+.ordering-verify-btn {
+  @apply w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm mt-2;
+}
+.ordering-verify-btn:hover { opacity: 0.9; }
+.ordering-verify-btn:disabled { opacity: 0.6; }
+
+.ordering-result {
+  @apply text-center mt-4 p-4 rounded-xl bg-muted/30;
+}
+.ordering-result-text {
+  @apply text-sm font-medium text-foreground mb-3;
+}
+.ordering-play-again {
+  @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium;
+}
+
+/* ===== VISUAL QUIZ GAME ===== */
+.vquiz-game {
+  @apply w-full max-w-lg mx-auto;
+}
+.vquiz-header {
+  @apply flex items-center justify-between mb-4 flex-wrap gap-3;
+}
+.vquiz-stats {
+  @apply flex gap-4 text-sm text-muted-foreground;
+}
+.vquiz-exit {
+  @apply text-sm px-3 py-1.5 rounded-lg bg-muted text-foreground;
+}
+.vquiz-exit:hover { @apply bg-muted/80; }
+
+.vquiz-question {
+  @apply mb-4;
+}
+.vquiz-image-wrap {
+  @apply w-full rounded-xl overflow-hidden bg-muted mb-4;
+  aspect-ratio: 16/10;
+}
+.vquiz-image {
+  @apply w-full h-full object-cover;
+}
+.vquiz-question-text {
+  @apply text-base font-medium text-foreground text-center;
+}
+
+.vquiz-options {
+  @apply grid grid-cols-2 gap-3;
+}
+.vquiz-option {
+  @apply px-4 py-3 rounded-lg bg-card border border-border text-sm font-medium text-center text-foreground transition-all;
+}
+.vquiz-option:hover:not(:disabled) {
+  @apply border-primary bg-primary/5;
+}
+.vquiz-option.correct {
+  @apply border-green-500 bg-green-500/15 text-green-700;
+}
+.vquiz-option.wrong {
+  @apply border-destructive bg-destructive/15 text-destructive;
+}
+
+.vquiz-result {
+  @apply text-center p-6 rounded-xl bg-card border border-border;
+}
+.vquiz-result-title {
+  @apply text-lg font-bold text-foreground mb-2;
+}
+.vquiz-result-score {
+  @apply text-sm text-foreground mb-1;
+}
+.vquiz-result-actions {
+  @apply flex items-center justify-center gap-3 mt-4;
+}
+.vquiz-btn-secondary {
+  @apply flex items-center gap-1.5 px-4 py-2 rounded-lg bg-muted text-foreground text-sm;
+}
+.vquiz-btn-secondary:hover { @apply bg-muted/80; }
+.vquiz-btn-primary {
+  @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium;
+}
+.vquiz-btn-primary:hover { opacity: 0.9; }
+
+/* ===== TRUE/FALSE GAME ===== */
+.tf-game {
+  @apply w-full max-w-lg mx-auto;
+}
+.tf-header {
+  @apply flex items-center justify-between mb-4 flex-wrap gap-3;
+}
+.tf-stats {
+  @apply flex gap-4 text-sm text-muted-foreground;
+}
+.tf-exit {
+  @apply text-sm px-3 py-1.5 rounded-lg bg-muted text-foreground;
+}
+.tf-exit:hover { @apply bg-muted/80; }
+
+.tf-progress-bar {
+  @apply w-full h-1.5 bg-muted rounded-full mb-6 overflow-hidden;
+}
+.tf-progress-fill {
+  @apply h-full bg-primary rounded-full;
+  transition: width 0.3s ease;
+}
+
+.tf-statement {
+  @apply p-6 rounded-xl bg-card border border-border text-center mb-6 transition-colors;
+}
+.tf-statement.correct { @apply border-green-500 bg-green-500/5; }
+.tf-statement.wrong { @apply border-destructive bg-destructive/5; }
+.tf-statement-text {
+  @apply text-base font-medium text-foreground;
+}
+.tf-statement-feedback {
+  @apply text-sm mt-3 font-medium;
+}
+.tf-statement.correct .tf-statement-feedback { @apply text-green-600; }
+.tf-statement.wrong .tf-statement-feedback { @apply text-destructive; }
+
+.tf-buttons {
+  @apply grid grid-cols-2 gap-3;
+}
+.tf-answer-btn {
+  @apply flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-border bg-card text-sm font-semibold text-foreground transition-all;
+}
+.tf-answer-btn:hover:not(:disabled) { @apply border-primary/50; }
+.tf-answer-true.correct { @apply border-green-500 bg-green-500/15 text-green-700; }
+.tf-answer-true.wrong { @apply border-destructive bg-destructive/15 text-destructive; }
+.tf-answer-false.correct { @apply border-green-500 bg-green-500/15 text-green-700; }
+.tf-answer-false.wrong { @apply border-destructive bg-destructive/15 text-destructive; }
+
+.tf-result {
+  @apply text-center p-6 rounded-xl bg-card border border-border;
+}
+.tf-result-title { @apply text-lg font-bold text-foreground mb-2; }
+.tf-result-score { @apply text-sm text-foreground mb-1; }
+.tf-result-review {
+  @apply flex flex-col gap-1.5 mt-4 mb-4 text-left max-h-48 overflow-y-auto;
+}
+.tf-review-item {
+  @apply flex items-center gap-2 px-3 py-2 rounded-lg text-xs;
+}
+.tf-review-item.correct { @apply bg-green-500/10 text-green-700; }
+.tf-review-item.wrong { @apply bg-destructive/10 text-destructive; }
+.tf-review-icon { @apply shrink-0; }
+.tf-review-text { @apply flex-1; }
+.tf-review-answer { @apply shrink-0 font-medium; }
+.tf-result-actions { @apply flex items-center justify-center gap-3; }
+.tf-btn-secondary {
+  @apply flex items-center gap-1.5 px-4 py-2 rounded-lg bg-muted text-foreground text-sm;
+}
+.tf-btn-secondary:hover { @apply bg-muted/80; }
+.tf-btn-primary {
+  @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium;
+}
+.tf-btn-primary:hover { opacity: 0.9; }
+
+/* ===== MATCHING GAME ===== */
+.match-game {
+  @apply w-full max-w-2xl mx-auto;
+}
+.match-header {
+  @apply flex items-center justify-between mb-4 flex-wrap gap-3;
+}
+.match-stats {
+  @apply flex gap-4 text-sm text-muted-foreground;
+}
+.match-header-actions {
+  @apply flex items-center gap-2;
+}
+.match-reset {
+  @apply p-2 rounded-lg bg-muted text-foreground;
+}
+.match-reset:hover { @apply bg-muted/80; }
+.match-exit {
+  @apply text-sm px-3 py-1.5 rounded-lg bg-muted text-foreground;
+}
+.match-exit:hover { @apply bg-muted/80; }
+.match-instruction {
+  @apply text-sm text-muted-foreground mb-4;
+}
+
+.match-columns {
+  @apply grid grid-cols-2 gap-4;
+}
+.match-column {
+  @apply flex flex-col gap-2;
+}
+.match-item {
+  @apply w-full px-4 py-3 rounded-lg border-2 border-border bg-card text-sm font-medium text-left text-foreground transition-all;
+}
+.match-item:hover:not(:disabled):not(.matched) { @apply border-primary/40; }
+.match-item.selected { @apply border-primary bg-primary/10 text-foreground; }
+.match-item.matched {
+  @apply border-green-500/40 bg-green-500/10 text-green-700 opacity-70;
+  pointer-events: none;
+}
+.match-item.wrong {
+  @apply border-destructive bg-destructive/10 text-destructive;
+}
+.match-item:disabled:not(.matched) { @apply opacity-50; }
+
+.match-result {
+  @apply text-center p-6 rounded-xl bg-card border border-border;
+}
+.match-result-title { @apply text-lg font-bold text-foreground mb-2; }
+.match-result-score { @apply text-sm text-foreground mb-1; }
+.match-result-actions { @apply flex items-center justify-center gap-3 mt-4; }
+.match-btn-secondary {
+  @apply flex items-center gap-1.5 px-4 py-2 rounded-lg bg-muted text-foreground text-sm;
+}
+.match-btn-secondary:hover { @apply bg-muted/80; }
+.match-btn-primary {
+  @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium;
+}
+.match-btn-primary:hover { opacity: 0.9; }
+
+/* ===== WORD SCRAMBLE GAME ===== */
+.ws-game {
+  @apply w-full max-w-lg mx-auto;
+}
+.ws-header {
+  @apply flex items-center justify-between mb-4 flex-wrap gap-3;
+}
+.ws-stats {
+  @apply flex gap-4 text-sm text-muted-foreground;
+}
+.ws-exit {
+  @apply text-sm px-3 py-1.5 rounded-lg bg-muted text-foreground;
+}
+.ws-exit:hover { @apply bg-muted/80; }
+
+.ws-hint-area {
+  @apply mb-4 text-center;
+}
+.ws-hint-btn {
+  @apply inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg bg-amber-500/10 text-amber-700 font-medium;
+}
+.ws-hint-btn:disabled { @apply cursor-default; }
+
+.ws-formed {
+  @apply flex justify-center gap-2 mb-4 flex-wrap;
+}
+.ws-formed-slot {
+  @apply w-10 h-12 flex items-center justify-center rounded-lg border-2 border-dashed border-border text-lg font-bold uppercase text-foreground;
+  transition: all 0.15s ease;
+}
+.ws-formed-slot.filled {
+  @apply border-solid border-primary/40 bg-primary/10 text-foreground;
+}
+.ws-formed-slot.correct {
+  @apply border-solid border-green-500 bg-green-500/15 text-green-700;
+}
+.ws-formed-slot.wrong {
+  @apply border-solid border-destructive bg-destructive/15 text-destructive;
+}
+
+.ws-undo {
+  @apply block mx-auto text-xs px-3 py-1.5 rounded-lg bg-muted text-foreground font-medium mb-4;
+}
+.ws-undo:hover { @apply bg-muted/80; }
+.ws-undo:disabled { @apply opacity-40 pointer-events-none; }
+
+.ws-scrambled {
+  @apply flex justify-center gap-2 mb-4 flex-wrap;
+}
+.ws-letter {
+  @apply w-10 h-12 flex items-center justify-center rounded-lg bg-card border border-border text-lg font-bold uppercase text-foreground transition-all;
+}
+.ws-letter:hover:not(:disabled) {
+  @apply border-primary bg-primary/5;
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.15);
+}
+.ws-letter.used {
+  @apply opacity-20 pointer-events-none;
+}
+
+.ws-feedback {
+  @apply text-center text-sm font-medium mt-2;
+}
+.ws-feedback.correct { @apply text-green-600; }
+.ws-feedback.wrong { @apply text-destructive; }
+
+.ws-result {
+  @apply text-center p-6 rounded-xl bg-card border border-border;
+}
+.ws-result-title { @apply text-lg font-bold text-foreground mb-2; }
+.ws-result-score { @apply text-sm text-foreground mb-1; }
+.ws-result-review {
+  @apply flex flex-col gap-1.5 mt-4 mb-4 text-left;
+}
+.ws-review-item {
+  @apply flex items-center gap-3 px-3 py-2 rounded-lg text-xs;
+}
+.ws-review-item.correct { @apply bg-green-500/10 text-green-700; }
+.ws-review-item.wrong { @apply bg-destructive/10 text-destructive; }
+.ws-review-word { @apply font-bold uppercase; }
+.ws-review-hint { @apply text-muted-foreground; }
+.ws-result-actions { @apply flex items-center justify-center gap-3; }
+.ws-btn-secondary {
+  @apply flex items-center gap-1.5 px-4 py-2 rounded-lg bg-muted text-foreground text-sm;
+}
+.ws-btn-secondary:hover { @apply bg-muted/80; }
+.ws-btn-primary {
+  @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium;
+}
+.ws-btn-primary:hover { opacity: 0.9; }
+
+/* ===== NEXT INGREDIENT GAME ===== */
+.ni-game {
+  @apply w-full max-w-lg mx-auto;
+}
+.ni-game.game-result-screen {
+  @apply min-h-[280px] w-full;
+  background: hsl(var(--background, 210 20% 96%));
+}
+.ni-header {
+  @apply flex items-center justify-between mb-3 flex-wrap gap-3;
+}
+.ni-stats {
+  @apply flex gap-4 text-sm text-muted-foreground;
+}
+.ni-exit {
+  @apply text-sm px-3 py-1.5 rounded-lg bg-muted text-foreground;
+}
+.ni-exit:hover { @apply bg-muted/80; }
+
+.ni-recipe-name {
+  @apply flex items-center gap-2 text-sm font-semibold text-primary mb-3;
+}
+
+.ni-progress-bar {
+  @apply w-full h-1.5 bg-muted rounded-full mb-5 overflow-hidden;
+}
+.ni-progress-fill {
+  @apply h-full bg-primary rounded-full;
+  transition: width 0.3s ease;
+}
+
+.ni-bowl {
+  @apply p-4 rounded-xl bg-muted/30 border border-border mb-5;
+}
+.ni-bowl-label {
+  @apply text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider;
+}
+.ni-bowl-items {
+  @apply flex flex-wrap gap-2;
+}
+.ni-bowl-item {
+  @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card border border-border text-sm;
+}
+.ni-bowl-emoji { @apply text-base; }
+.ni-bowl-name { @apply font-medium text-foreground; }
+
+.ni-question {
+  @apply text-center text-base font-semibold text-foreground mb-4;
+}
+
+.ni-options {
+  @apply grid grid-cols-2 gap-3;
+}
+.ni-option {
+  @apply flex items-center gap-2 px-4 py-3.5 rounded-xl bg-card border-2 border-border text-left text-foreground transition-all;
+}
+.ni-option:hover:not(:disabled) {
+  @apply border-primary/40;
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.12);
+}
+.ni-option.correct {
+  @apply border-green-500 bg-green-500/10;
+}
+.ni-option.wrong {
+  @apply border-destructive bg-destructive/10;
+}
+.ni-option-emoji { @apply text-xl; }
+.ni-option-name { @apply text-sm font-medium text-foreground; }
+
+.ni-result {
+  @apply text-center p-6 rounded-xl border border-border;
+  background-color: hsl(var(--card, 0 0% 100%));
+  color: hsl(var(--foreground, 220 20% 15%));
+}
+.ni-result-icon {
+  @apply mx-auto mb-2 text-primary;
+}
+.ni-result-title { @apply text-lg font-bold text-foreground mb-1; }
+.ni-result-recipe { @apply text-sm text-primary font-medium mb-2; }
+.ni-result-score { @apply text-sm text-foreground mb-1; }
+
+.ni-result-sequence {
+  @apply flex flex-col gap-1.5 mt-4 mb-4 text-left;
+}
+.ni-result-ingredient {
+  @apply flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 text-sm;
+}
+.ni-result-emoji { @apply text-base; }
+.ni-result-name { @apply flex-1 font-medium text-foreground; }
+.ni-result-check {
+  @apply text-xs font-bold shrink-0;
+}
+.ni-result-check.correct { @apply text-green-600; }
+.ni-result-check.wrong { @apply text-destructive; }
+
+.ni-result-actions { @apply flex items-center justify-center gap-3; }
+.ni-btn-secondary {
+  @apply flex items-center gap-1.5 px-4 py-2 rounded-lg bg-muted text-foreground text-sm;
+}
+.ni-btn-secondary:hover { @apply bg-muted/80; }
+.ni-btn-primary {
+  @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium;
+}
+.ni-btn-primary:hover { opacity: 0.9; }
+
+/* ===== MINIGAME PLAYER (standalone) ===== */
+.minigame-player-wrapper {
+  @apply min-h-screen flex items-center justify-center p-4;
+  background: hsl(var(--background, 210 20% 96%));
+}
+.minigame-player-error {
+  @apply text-center;
+}
+.minigame-player-error p {
+  @apply text-muted-foreground mb-4;
+}
+.minigame-player-error button {
+  @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium;
+}
+
+/* ===== GAME INTRO SCREEN ===== */
+.game-intro {
+  @apply w-full max-w-md mx-auto p-6 rounded-2xl bg-card border border-border shadow-lg;
+}
+.game-intro-content {
+  @apply flex flex-col items-center text-center;
+}
+.game-intro-icon {
+  @apply text-5xl mb-4;
+}
+.game-intro-title {
+  @apply text-xl font-bold text-foreground mb-1;
+}
+.game-intro-subtitle {
+  @apply text-sm text-muted-foreground mb-6;
+}
+.game-intro-actions {
+  @apply flex flex-col sm:flex-row gap-3 w-full sm:w-auto;
+}
+.game-intro-btn {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all border-none cursor-pointer;
+}
+.game-intro-btn-primary {
+  @apply bg-primary text-primary-foreground;
+}
+.game-intro-btn-primary:hover { opacity: 0.9; }
+.game-intro-btn-secondary {
+  @apply bg-muted text-foreground;
+}
+.game-intro-btn-secondary:hover { @apply bg-muted/80; }
+.game-intro--memory .game-intro-icon { font-size: 3.5rem; }
+.game-intro--ordering { @apply max-w-lg; }
+.game-intro--vquiz .game-intro-icon { font-size: 3rem; }
+.game-intro--tf .game-intro-icon { @apply text-4xl; }
+.game-intro--matching .game-intro-icon { font-size: 3rem; }
+.game-intro--scramble .game-intro-icon { font-size: 3rem; }
+.game-intro--ni .game-intro-icon { font-size: 3.5rem; }
+
+/* ===== GAME RESULT (victory/defeat) ===== */
+.game-result-screen {
+  @apply w-full text-center py-6;
+}
+.game-result-badge {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold mb-4;
+}
+.game-result-badge.won {
+  @apply bg-green-500/15 text-green-700;
+}
+.game-result-badge.lost {
+  @apply bg-destructive/15 text-destructive;
+}
+.game-result-actions {
+  @apply flex flex-wrap gap-3 justify-center mt-6;
+}
+.game-result-btn {
+  @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border-none cursor-pointer;
+}
+.game-result-btn:disabled { @apply opacity-60 cursor-not-allowed; }
+.game-result-btn-primary {
+  @apply bg-primary text-primary-foreground;
+}
+.game-result-btn-primary:hover:not(:disabled) { opacity: 0.9; }
+.game-result-btn-secondary {
+  @apply bg-muted text-foreground;
+}
+.game-result-btn-secondary:hover:not(:disabled) { @apply bg-muted/80; }
+.game-result-btn-outline {
+  @apply bg-transparent border border-border text-foreground;
+}
+.game-result-btn-outline:hover:not(:disabled) { @apply bg-muted; }
+
+/* Wysiwyg minigame button styling */
+.has-minigame-btn .ql-minigame::before {
+  content: "🎮";
+}
+.has-minigame-btn .ql-minigame {
+  width: 28px !important;
+}
+
 /* ===== DASHBOARD ===== */
 .dashboard h2 {
   @apply mb-5 text-foreground text-xl font-bold;
@@ -596,17 +1547,51 @@ section h3 {
   @apply flex gap-3 flex-wrap;
 }
 
+/* Dashboard: small achievement chips */
 .badge-item {
-  @apply bg-card py-2 px-4 rounded-lg text-sm flex items-center gap-3;
-  box-shadow: 0 3px 8px hsl(var(--foreground) / 0.04);
+  @apply bg-card rounded-xl text-sm flex items-center gap-3;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 2px 8px hsl(var(--foreground) / 0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.badge-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px hsl(38 95% 52% / 0.18);
+  border-color: hsl(38 95% 52% / 0.35);
 }
 
 .badge-item-img {
-  @apply w-10 h-10 object-contain rounded;
+  @apply object-contain flex-shrink-0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
 }
 
 .badge-item-icon {
-  @apply text-primary flex-shrink-0;
+  @apply text-white flex-shrink-0;
+}
+
+/* Golden circle container for badge icons (when no image is set) */
+.badge-icon-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, hsl(43 96% 58%), hsl(32 95% 46%));
+  box-shadow: 0 3px 10px hsl(38 95% 52% / 0.35);
+}
+
+.badge-icon-wrap--lg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.badge-icon-wrap--sm {
+  width: 2.25rem;
+  height: 2.25rem;
 }
 
 .course-badges .badge-icon {
@@ -617,25 +1602,93 @@ section h3 {
   @apply object-contain;
 }
 
+/* Grid of badge cards — MyBadges & BadgesManager pages */
+.badges-grid {
+  @apply grid gap-5;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
 .badge-manager-card {
-  @apply bg-card p-4 rounded-xl border border-border;
+  @apply bg-card rounded-2xl;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
 
+/* Golden top accent stripe */
+.badge-manager-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(43 96% 58%), hsl(32 95% 46%));
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.badge-manager-card:hover,
+button.badge-manager-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px hsl(var(--foreground) / 0.09);
+  border-color: hsl(43 96% 58% / 0.4);
+}
+
+button.badge-manager-card:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Top section: image/icon touches the card top edge, full width, 200px tall */
 .badge-manager-header {
-  @apply flex items-center gap-4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 200px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(160deg, hsl(43 96% 58% / 0.12), hsl(var(--muted) / 0.4));
+  /* No border-radius here — the parent card clips it via overflow:hidden + rounded-2xl */
 }
 
+/* Image fills the full header area */
 .badge-manager-img {
-  @apply w-12 h-12 object-contain rounded;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Icon fallback: large golden circle centered inside the 200px area */
+.badge-icon-wrap--xl {
+  width: 5rem;
+  height: 5rem;
 }
 
 .badge-manager-icon {
-  @apply text-primary flex-shrink-0;
+  @apply text-white flex-shrink-0;
 }
 
-.badges-grid {
-  @apply grid gap-4;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+/* Middle section: title + description */
+.badge-manager-body {
+  flex: 1;
+  padding: 1rem 1.25rem 0.75rem;
+}
+
+/* Bottom section: buttons aligned right */
+.badge-manager-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-top: 1px solid hsl(var(--border) / 0.6);
+  margin-top: auto;
 }
 
 /* ===== COURSES PAGE ===== */
@@ -781,7 +1834,7 @@ button.creation-section-title {
 }
 
 .creation-item.active {
-  @apply bg-primary/15 border-primary text-primary font-medium;
+  @apply bg-primary/15 border-primary text-foreground font-medium;
 }
 
 .creation-item-readonly {
@@ -871,6 +1924,30 @@ button.creation-section-title {
   @apply text-foreground text-sm;
 }
 
+/* Media toolbar button icon */
+.wysiwyg-editor .ql-snow button.ql-media::before {
+  content: "🖼";
+  font-size: 1em;
+}
+.wysiwyg-editor .ql-snow button.ql-media {
+  width: 28px;
+}
+
+/* HTML block toolbar button */
+.wysiwyg-editor .ql-snow button.ql-html::before {
+  content: "</>";
+  font-size: 0.75em;
+  font-weight: 600;
+}
+.wysiwyg-editor .ql-snow button.ql-html {
+  width: 28px;
+}
+
+/* HTML block embed no editor */
+.wysiwyg-editor .ql-html-block {
+  margin: 0.5em 0;
+}
+
 .creation-item-new {
   @apply text-primary font-medium;
 }
@@ -905,11 +1982,11 @@ button.creation-section-title {
 }
 
 .course-sidebar .sidebar-module {
-  @apply mb-4 pb-4 border-b border-border/50 last:border-0 last:mb-0 last:pb-0;
+  @apply mb-2 pb-2 last:mb-0 last:pb-0;
 }
 
 .course-sidebar .sidebar-module.sidebar-module-completed {
-  @apply bg-primary/5 rounded-lg px-2 -mx-2 pt-2;
+  @apply rounded-lg px-2 -mx-2 pt-2;
 }
 
 .course-sidebar .sidebar-item {
@@ -985,7 +2062,7 @@ button.creation-section-title {
 }
 
 .options .option-btn.selected {
-  @apply border-primary bg-primary/10;
+  @apply border-primary bg-primary/10 text-foreground;
 }
 
 .options button {
@@ -1168,7 +2245,7 @@ th {
 .chart-slide-btn {
   @apply py-2 px-4 rounded-lg text-sm font-medium transition-colors;
   background: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--foreground));
 }
 
 .chart-slide-btn:hover,
@@ -1274,6 +2351,18 @@ th {
   @apply px-2 py-0.5 rounded text-xs font-medium;
   background: hsl(0 84% 60% / 0.2);
   color: hsl(0 84% 50%);
+}
+
+.badge-info {
+  @apply px-2 py-0.5 rounded text-xs font-medium;
+  background: hsl(217 91% 60% / 0.2);
+  color: hsl(217 91% 50%);
+}
+
+.badge-muted {
+  @apply px-2 py-0.5 rounded text-xs font-medium;
+  background: hsl(215 16% 47% / 0.15);
+  color: hsl(215 16% 47%);
 }
 
 .performance-sidebar {
@@ -1400,12 +2489,24 @@ th {
   .chart-card {
     @apply p-3;
   }
+
+  /* PWA install card: full-width centered on very small screens */
+  .pwa-install-card {
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    max-width: none;
+  }
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .mobile-topbar {
-    @apply fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3;
+    @apply fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4;
+    /* Account for notched devices (iPhone X+) in PWA standalone mode */
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+    padding-bottom: 0.75rem;
+    min-height: var(--topbar-height);
     background: hsl(var(--card));
     border-bottom: 1px solid hsl(var(--border));
   }
@@ -1417,7 +2518,6 @@ th {
 
   .mobile-topbar-actions {
     @apply flex items-center gap-2 flex-shrink-0;
-    @apply flex items-center gap-2;
   }
 
   .mobile-user-dropdown {
@@ -1455,7 +2555,9 @@ th {
   }
 
   .layout-sidebar {
-    @apply fixed h-full z-50;
+    @apply fixed z-50;
+    height: 100vh;
+    min-height: 100vh;
     transform: translateX(-100%);
     transition: transform 0.2s ease;
   }
@@ -1509,12 +2611,29 @@ th {
   }
 
   .manager-tabs {
-    @apply flex-col;
+    /* Horizontal scrollable tabs instead of stacked column */
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .manager-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .manager-tabs button {
+    flex-shrink: 0;
   }
 
   .layout-main {
-    @apply p-4 pb-24;
-    padding-top: 72px;
+    @apply p-4;
+    /* Push content below fixed topbar + safe area (notched devices) */
+    padding-top: calc(72px + env(safe-area-inset-top, 0px));
+    /* Reserve space for fixed bottom nav + home indicator safe area */
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
   }
 
   .card {
@@ -1528,6 +2647,8 @@ th {
   .bottom-nav {
     @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40;
     display: block;
+    /* Push nav items above the home indicator on iPhone X+ */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .cards-grid {
@@ -1537,17 +2658,69 @@ th {
   .empty-state {
     @apply py-12 px-4;
   }
+
+  /* --- Notification panel overflow fix ---
+     Topbar variant: escape from the relative wrapper (only ~40px wide) and pin
+     directly to the viewport — right-aligned, always within screen bounds.
+     position:fixed !important overrides the Tailwind `absolute` class.
+     width    !important overrides the inline style set by the component.
+     The topbar has no CSS transform, so fixed positioning is relative to
+     the true viewport (safe to use). */
+  .notification-panel--topbar {
+    position: fixed !important;
+    top: calc(var(--topbar-height) + env(safe-area-inset-top, 0px) + 0.5rem);
+    right: 2rem;
+    left: auto;
+    width: min(300px, calc(100vw - 4rem)) !important;
+    max-width: calc(100vw - 1rem);
+    min-width: 0;
+  }
+
+  /* Sidebar variant: the sidebar uses CSS transform so `position:fixed`
+     would be contained by the sidebar, not the viewport.
+     Instead, keep absolute positioning but clamp the width so the panel
+     never exceeds the available screen space. */
+  .notification-panel--sidebar {
+    width: min(240px, calc(100vw - 4rem)) !important;
+    max-width: calc(100vw - 4rem);
+    min-width: 0;
+  }
 }
 
 @media (min-width: 769px) {
   .sidebar-close-btn {
     @apply hidden;
   }
+
+  /* Sidebar fixa no desktop: notificações e menu do usuário sempre visíveis */
+  .layout-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    min-height: 100vh;
+    flex-shrink: 0;
+    z-index: 40;
+    overflow: visible;
+  }
+
+  /* Área do nav pode rolar internamente se houver muitos itens; sidebar-bottom permanece fixo */
+  .layout-sidebar > div:first-child {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* Com modal aberto: sidebar fixo precisa de espaço reservado no conteúdo */
+  body[data-scroll-locked] .app-layout .layout-main {
+    margin-left: 260px;
+  }
 }
 
 @media (max-width: 480px) {
   .layout-main {
-    @apply p-3 pb-24;
+    /* Only reduce horizontal padding — top and bottom are inherited from the 768px block */
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 
   .cards-grid {
@@ -1568,9 +2741,18 @@ th {
 }
 
 /* ===== PAGE LOADER ===== */
+/* Contido na área de conteúdo — nunca sobre sidebar, topbar ou bottombar */
+.page-loader-root {
+  @apply relative flex-1 min-h-0 flex flex-col;
+}
+
 .page-loader-overlay {
   @apply absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm;
   transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.page-loader-overlay--centered {
+  @apply justify-center items-center;
 }
 
 .page-loader-exit {
@@ -1610,6 +2792,59 @@ th {
   @apply text-sm font-medium text-muted-foreground;
   letter-spacing: 0.05em;
   animation: page-loader-pulse 1.5s ease-in-out infinite;
+}
+
+/* ===== UI ANIMATION PRIMITIVES ===== */
+
+/* Dropdown / panel — slide from slightly above + fade in */
+@keyframes dropdown-enter {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+/* Dropdown / panel — collapse upward + fade out (faster than enter) */
+@keyframes dropdown-exit {
+  from { opacity: 1; transform: translateY(0)    scale(1);    }
+  to   { opacity: 0; transform: translateY(-4px) scale(0.97); }
+}
+
+/* Sidebar overlay — plain fade */
+@keyframes overlay-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlay-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* Page content — subtle slide up + fade (forward navigation only) */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ===== Animation utility classes ===== */
+
+/* Panels & dropdowns */
+.is-entering {
+  animation: dropdown-enter 190ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.is-closing {
+  animation: dropdown-exit 110ms ease-in both;
+  pointer-events: none;
+}
+
+/* Sidebar overlay */
+.overlay-entering {
+  animation: overlay-in 180ms ease both;
+}
+.overlay-closing {
+  animation: overlay-out 130ms ease both;
+  pointer-events: none;
+}
+
+/* Page transition (applied only on PUSH navigation) */
+.page-enter {
+  animation: page-enter 230ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Sidebar slide-in improvement — more natural spring-like ease */
+.layout-sidebar {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 @keyframes page-loader-spin {

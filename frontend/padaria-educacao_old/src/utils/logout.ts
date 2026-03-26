@@ -5,7 +5,7 @@ export async function logout() {
     const token = localStorage.getItem("token");
 
     await axios.post(
-      "http://localhost:8000/api/auth/logout",
+      "https://ead-api.dcmmarketingdigital.com.br:8000/api/auth/logout",
       {},
       {
         headers: {

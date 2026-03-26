@@ -115,7 +115,7 @@ class BadgeAwardService
 
         foreach ($badges as $badge) {
             $params = $badge->criteria_params ?? [];
-            $minScore = $params['min_score'] ?? 0;
+            $minScore = (int) ($params['min_score'] ?? 0);
             if ($score >= $minScore && !$user->badges()->where('badge_id', $badge->id)->exists()) {
                 $user->badges()->attach($badge->id, [
                     'course_id' => $game->course_id,

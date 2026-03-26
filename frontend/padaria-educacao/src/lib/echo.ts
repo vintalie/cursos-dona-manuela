@@ -36,7 +36,7 @@ export function getEcho(): Echo | null {
   }
 
   if (!window.Echo) {
-    const apiBase = import.meta.env.VITE_API_BASE || "http://localhost";
+    const apiBase = import.meta.env.VITE_API_BASE || "https://ead-api.dcmmarketingdigital.com.br";
     const base = apiBase.replace(/\/$/, "").replace(/\/api$/, "");
     window.Echo = new Echo({
       broadcaster: "pusher",

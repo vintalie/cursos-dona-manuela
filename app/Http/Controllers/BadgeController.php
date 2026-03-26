@@ -24,11 +24,13 @@ class BadgeController extends Controller
             'image' => 'nullable|string|max:500',
             'icon' => 'nullable|string|max:50',
             'notification_message' => 'nullable|string|max:255',
-            'criteria_type' => 'required|string|in:module_perfect,course_time,course_perfect,course_complete,custom',
+            'criteria_type' => 'required|string|in:module_perfect,course_time,course_perfect,course_complete,game_score,custom',
             'criteria_params' => 'nullable|array',
             'criteria_params.course_id' => 'nullable|exists:courses,id',
             'criteria_params.module_id' => 'nullable|exists:modules,id',
             'criteria_params.max_minutes' => 'nullable|integer|min:1',
+            'criteria_params.game_id' => 'nullable|exists:games,id',
+            'criteria_params.min_score' => 'nullable|integer|min:0|max:100',
         ]);
 
         $validated['icon'] = $validated['icon'] ?? 'star';
@@ -52,8 +54,10 @@ class BadgeController extends Controller
             'image' => 'nullable|string|max:500',
             'icon' => 'nullable|string|max:50',
             'notification_message' => 'nullable|string|max:255',
-            'criteria_type' => 'sometimes|string|in:module_perfect,course_time,course_perfect,course_complete,custom',
+            'criteria_type' => 'sometimes|string|in:module_perfect,course_time,course_perfect,course_complete,game_score,custom',
             'criteria_params' => 'nullable|array',
+            'criteria_params.game_id' => 'nullable|exists:games,id',
+            'criteria_params.min_score' => 'nullable|integer|min:0|max:100',
         ]);
 
         $badge->update($validated);

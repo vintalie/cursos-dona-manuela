@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCourses } from "@/services/course.service";
+import { showAlert } from "@/contexts/AlertPopupContext";
 import { createModule } from "@/services/module.service";
 import type { Course } from "@/types";
 
@@ -11,8 +12,6 @@ export default function CreateMateria() {
   const [courseId, setCourseId] = useState<number | "">("");
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     getCourses().then(setCourses).catch(() => setCourses([]));
@@ -20,14 +19,12 @@ export default function CreateMateria() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
     if (!title.trim()) {
-      setError("Título é obrigatório");
+      showAlert({ type: "error", message: "Título é obrigatório" });
       return;
     }
     if (!courseId) {
-      setError("Selecione um curso");
+      showAlert({ type: "error", message: "Selecione um curso" });
       return;
     }
     setLoading(true);
@@ -87,8 +84,6 @@ export default function CreateMateria() {
           onChange={(e) => setContent(e.target.value)}
           className="min-h-[150px]"
         />
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-2">Matéria criada com sucesso!</p>}
         <button type="submit" disabled={loading}>
           {loading ? "Criando..." : "Criar Matéria"}
         </button>

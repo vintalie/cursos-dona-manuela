@@ -20,6 +20,8 @@ use App\Models\Question;
 use App\Models\Category;
 use App\Models\Option;
 use App\Models\User;
+use App\Models\Media;
+use App\Models\MediaCategory;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +37,8 @@ use App\Policies\QuestionPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\OptionPolicy;
 use App\Policies\UserPolicy;
+use App\Policies\MediaPolicy;
+use App\Policies\MediaCategoryPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -54,6 +58,8 @@ class AuthServiceProvider extends ServiceProvider
         Option::class     => OptionPolicy::class,
         Category::class   => CategoryPolicy::class,
         User::class => UserPolicy::class,
+        Media::class => MediaPolicy::class,
+        MediaCategory::class => MediaCategoryPolicy::class,
     ];
 
     /**

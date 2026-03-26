@@ -16,7 +16,14 @@ import {
 } from "recharts";
 import { useAuth } from "@/contexts/AuthContext";
 import { setDocumentTitle } from "@/config/appConfig";
-import { getMyPerformance, getUserPerformance, type UserPerformanceData } from "@/services/performance.service";
+import { getMyPerformance, getUserPerformance, type UserPerformanceData, type UserStatus } from "@/services/performance.service";
+
+const STATUS_CONFIG: Record<UserStatus, { label: string; color: string; chartColor: string }> = {
+  nao_iniciado: { label: "Não Iniciado", color: "text-muted-foreground", chartColor: "#94a3b8" },
+  em_andamento: { label: "Em Andamento", color: "text-blue-600", chartColor: "#3b82f6" },
+  aprovado: { label: "Aprovado", color: "text-green-600", chartColor: "#22c55e" },
+  reprovado: { label: "Reprovado", color: "text-red-600", chartColor: "#ef4444" },
+};
 import GaugeChart from "@/components/performance/GaugeChart";
 import PageLoader from "@/components/ui/PageLoader";
 import EmptyState from "@/components/ui/EmptyState";
@@ -65,8 +72,9 @@ export default function UserPerformance() {
   const acertos = stats?.average_score ?? 0;
   const erros = 100 - acertos;
 
-  const pieData = data
-    ? [{ name: stats?.approved ? "Aprovado" : "Reprovado", value: 1, color: stats?.approved ? "#22c55e" : "#ef4444" }]
+  const statusCfg = stats ? STATUS_CONFIG[stats.status] : null;
+  const pieData = data && statusCfg
+    ? [{ name: statusCfg.label, value: 1, color: statusCfg.chartColor }]
     : [];
 
   return (
@@ -106,8 +114,8 @@ export default function UserPerformance() {
           <span className="stat-label">Avaliações</span>
         </div>
         <div className="stat-card">
-          <span className={`stat-value ${stats.approved ? "text-green-600" : "text-red-600"}`}>
-            {stats.approved ? "Aprovado" : "Reprovado"}
+          <span className={`stat-value ${STATUS_CONFIG[stats.status]?.color ?? "text-muted-foreground"}`}>
+            {STATUS_CONFIG[stats.status]?.label ?? stats.status}
           </span>
           <span className="stat-label">Status</span>
         </div>

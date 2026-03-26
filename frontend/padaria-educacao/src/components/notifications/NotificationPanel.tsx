@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useAnimatedPresence } from "@/hooks/useAnimatedPresence";
 import {
   deleteAllNotifications,
   getNotifications,
@@ -16,7 +17,7 @@ import {
 import { getEcho } from "@/lib/echo";
 import { useAuth } from "@/contexts/AuthContext";
 import { Bell, Check, CheckCheck } from "lucide-react";
-import { toast } from "sonner";
+import { showAlert } from "@/contexts/AlertPopupContext";
 
 const PANEL_WIDTH = 300;
 
@@ -114,7 +115,7 @@ export default function NotificationPanel({ variant = "sidebar" }: NotificationP
                 : err === "timeout"
                   ? "Tempo esgotado. Verifique sua conexão e tente novamente."
                   : "Não foi possível ativar. Tente novamente.";
-          toast.error(msg);
+          showAlert({ type: "error", message: msg });
         }
       }
     } finally {
@@ -130,7 +131,7 @@ export default function NotificationPanel({ variant = "sidebar" }: NotificationP
       channel.listen(".notification.created", (e: { id?: number; title?: string; message?: string }) => {
         refreshUnreadCount();
         if (openRef.current) fetchNotifications();
-        if (e?.title) toast(e.title, { description: e.message });
+        if (e?.title) showAlert({ type: "info", title: e.title, message: e.message ?? "" });
       });
       return () => {
         channel.stopListening(".notification.created");
@@ -173,15 +174,15 @@ export default function NotificationPanel({ variant = "sidebar" }: NotificationP
     try {
       await deleteAllNotifications();
       setData({ notifications: [], unread_count: 0 });
-      toast.success("Notificações removidas");
     } catch {
-      toast.error("Não foi possível remover as notificações");
+      showAlert({ type: "error", message: "Não foi possível remover as notificações" });
     } finally {
       setMarkAllLoading(false);
     }
   }
 
   const unreadCount = data?.unread_count ?? 0;
+  const { mounted: panelMounted, closing: panelClosing } = useAnimatedPresence(open, 120);
 
   return (
     <div className="relative flex justify-center">
@@ -200,7 +201,7 @@ export default function NotificationPanel({ variant = "sidebar" }: NotificationP
         )}
       </button>
 
-      {open && (
+      {panelMounted && (
         <>
           <div
             className="fixed inset-0 z-40"
@@ -210,9 +211,9 @@ export default function NotificationPanel({ variant = "sidebar" }: NotificationP
           <div
             className={`notification-panel absolute z-50 ${
               variant === "topbar"
-                ? "top-full right-0 mt-2"
-                : "bottom-full left-0 mb-2"
-            }`}
+                ? "top-full right-0 mt-2 notification-panel--topbar"
+                : "bottom-full left-0 mb-2 notification-panel--sidebar"
+            } ${panelClosing ? "is-closing" : "is-entering"}`}
             style={{
               width: variant === "topbar" ? `min(${PANEL_WIDTH}px, calc(100vw - 2rem))` : PANEL_WIDTH,
             }}
@@ -233,10 +234,10 @@ export default function NotificationPanel({ variant = "sidebar" }: NotificationP
                         : "Receber notificações mesmo fora da plataforma"
                     }
                   >
-                    <Bell size={14} />
+                    <Bell size={14} className="hidden sm:inline-block" />
                     {notificationPermission === "denied"
-                      ? "Notificações bloqueadas"
-                      : "Ativar no dispositivo"}
+                      ? "Bloqueadas"
+                      : "Ativar notificações"}
                   </button>
                 )}
               </div>

@@ -129,6 +129,11 @@ class CourseController extends Controller
         $course->users()->syncWithoutDetaching([$user->id => []]);
         $user->completedLessons()->syncWithoutDetaching([$lesson->id => ['completed_at' => now()]]);
         $this->recalculateProgress($course, $user);
+
+        $badgeService = app(BadgeAwardService::class);
+        $badgeService->checkModuleComplete($user, $lesson->module);
+        $badgeService->checkCourseComplete($user, $course);
+
         $pivot = $course->users()->where('user_id', $user->id)->first()->pivot;
         return response()->json(['message' => 'Aula concluída', 'progress' => $pivot->progress]);
     }

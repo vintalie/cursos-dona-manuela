@@ -17,6 +17,9 @@ use App\Http\Controllers\BadgeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\GameAdminController;
+use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MediaCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,12 +29,22 @@ use App\Http\Controllers\GameController;
 
 Route::prefix('auth')->group(function () {
 
+    Route::post('check-email', [AuthController::class, 'checkEmail']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
+    // Refresh must be outside auth:api middleware — needs to accept expired tokens
+    Route::post('refresh', [AuthController::class, 'refresh']);
+
+    // Google OAuth — usa middleware web para sessão (state, frontend_url)
+    Route::get('google', [AuthController::class, 'redirectToGoogle'])
+        ->middleware('web');
+    Route::get('google/callback', [AuthController::class, 'handleGoogleCallback'])
+        ->middleware('web');
 
     Route::middleware('auth:api')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
         Route::put('me', [AuthController::class, 'updateProfile']);
+        Route::post('avatar', [AuthController::class, 'uploadAvatar']);
         Route::post('logout', [AuthController::class, 'logout']);
     });
 });
@@ -46,6 +59,14 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware(['auth:api', 'role:gerente'])->group(function () {
     Route::apiResource('users', UserController::class);
+
+    Route::post('media-categories', [MediaCategoryController::class, 'store']);
+    Route::delete('media-categories/{mediaCategory}', [MediaCategoryController::class, 'destroy']);
+
+    Route::get('games/admin', [GameAdminController::class, 'index']);
+    Route::post('games', [GameAdminController::class, 'store']);
+    Route::put('games/{game}', [GameAdminController::class, 'update']);
+    Route::delete('games/{game}', [GameAdminController::class, 'destroy']);
 });
 
 Route::middleware('auth:api')->group(function () {
@@ -90,6 +111,13 @@ Route::middleware('auth:api')->group(function () {
     Route::get('games', [GameController::class, 'index']);
     Route::get('games/{game}', [GameController::class, 'show']);
     Route::post('games/{game}/complete', [GameController::class, 'complete']);
+
+    Route::get('media', [MediaController::class, 'index']);
+    Route::post('media', [MediaController::class, 'store']);
+    Route::patch('media/{media}', [MediaController::class, 'update']);
+    Route::delete('media/{media}', [MediaController::class, 'destroy']);
+
+    Route::get('media-categories', [MediaCategoryController::class, 'index']);
 
     Route::get('performance/overview', [PerformanceController::class, 'overview']);
     Route::get('performance/course/{course}', [PerformanceController::class, 'courseStats']);

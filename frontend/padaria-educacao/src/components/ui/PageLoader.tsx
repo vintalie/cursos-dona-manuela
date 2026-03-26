@@ -27,18 +27,23 @@ export default function PageLoader({ loading, children }: PageLoaderProps) {
     return <>{children}</>;
   }
 
-  return (
-    <div className="page-loader-wrapper relative min-h-full w-full">
-      <div
-        className={`page-loader-overlay ${exiting ? "page-loader-exit" : ""}`}
-        aria-hidden={!loading}
-      >
+  const overlay = (
+    <div
+      className={`page-loader-overlay page-loader-overlay--centered ${exiting ? "page-loader-exit" : ""}`}
+      aria-hidden={!loading}
+    >
       <div className="page-loader-spinner">
         <div className="page-loader-ring page-loader-ring-outer" />
         <div className="page-loader-ring page-loader-ring-inner" />
       </div>
       <p className="page-loader-text">Carregando...</p>
-      </div>
+    </div>
+  );
+
+  return (
+    <div className="page-loader-root">
+      {overlay}
+      {children}
     </div>
   );
 }

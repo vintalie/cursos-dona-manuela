@@ -1,5 +1,7 @@
-import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
+import { cleanupOutdatedCaches, precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
+import { NavigationRoute, registerRoute } from "workbox-routing";
+import { NetworkFirst } from "workbox-strategies";
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -7,7 +9,29 @@ self.skipWaiting();
 clientsClaim();
 
 cleanupOutdatedCaches();
+
+/* Assets (JS/CSS): NetworkFirst – rede primeiro, cache só offline.
+ * Registrado ANTES do precache para evitar tela branca: SW antigo não força cache de assets antigos. */
+registerRoute(
+  ({ url }) => url.pathname.startsWith("/assets/"),
+  new NetworkFirst({ cacheName: "assets-runtime", networkTimeoutSeconds: 10 })
+);
+
 precacheAndRoute(self.__WB_MANIFEST ?? []);
+
+/* Navegação: NetworkFirst – busca index.html na rede primeiro; usa precache só offline.
+ * Evita tela branca após deploy: SW antigo não serve index.html em cache com URLs de assets antigos. */
+const precacheFallback = createHandlerBoundToURL("/index.html");
+const navigationHandler = async (ctx: { request: Request }) => {
+  try {
+    const res = await fetch(ctx.request);
+    if (res?.ok) return res;
+  } catch {
+    /* offline – usar precache */
+  }
+  return precacheFallback(ctx);
+};
+registerRoute(new NavigationRoute(navigationHandler));
 
 /* ===== WEB PUSH – Notificações nativas do sistema operacional ===== */
 self.addEventListener("push", (event: PushEvent) => {

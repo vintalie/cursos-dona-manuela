@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createQuestion } from "@/services/question.service";
+import { showAlert } from "@/contexts/AlertPopupContext";
 import { createOption } from "@/services/option.service";
 
 interface CreatePerguntaProps {
@@ -17,7 +18,6 @@ export default function CreatePergunta({ assessmentId, onQuestionAdded }: Create
     { letra: "D", texto: "", correta: false },
   ]);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const handleAlternativaChange = (index: number, value: string) => {
     const novas = [...alternativas];
@@ -51,7 +51,6 @@ export default function CreatePergunta({ assessmentId, onQuestionAdded }: Create
       return;
     }
     setLoading(true);
-    setSuccess(false);
     try {
       const q = await createQuestion({
         assessment_id: assessmentId,
@@ -76,10 +75,10 @@ export default function CreatePergunta({ assessmentId, onQuestionAdded }: Create
         { letra: "C", texto: "", correta: false },
         { letra: "D", texto: "", correta: false },
       ]);
-      setSuccess(true);
+      showAlert({ type: "success", message: "Pergunta salva!" });
       onQuestionAdded?.();
-    } catch (err) {
-      alert("Erro ao salvar pergunta");
+    } catch {
+      showAlert({ type: "error", message: "Erro ao salvar pergunta" });
     } finally {
       setLoading(false);
     }
@@ -121,7 +120,6 @@ export default function CreatePergunta({ assessmentId, onQuestionAdded }: Create
           </div>
         ))}
       </div>
-      {success && <p className="text-green-600 text-sm mb-2">Pergunta salva!</p>}
       <button className="salvar-btn" onClick={salvarPergunta} disabled={loading}>
         {loading ? "Salvando..." : "Salvar Pergunta"}
       </button>

@@ -1,21 +1,28 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setDocumentTitle } from "@/config/appConfig";
 import { getDashboard, type DashboardData } from "@/services/dashboard.service";
 import PageLoader from "@/components/ui/PageLoader";
 import { Star, Gamepad2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const { isGerente } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (isGerente) {
+      navigate("/desempenhos", { replace: true });
+      return;
+    }
     setDocumentTitle("Dashboard");
     getDashboard()
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+  }, [isGerente, navigate]);
 
   return (
     <PageLoader loading={loading}>
@@ -110,7 +117,9 @@ export default function Dashboard() {
                       {badge.image ? (
                         <img src={badge.image} alt={badge.title} className="badge-item-img" />
                       ) : (
-                        <Star size={24} fill="currentColor" className="badge-item-icon" />
+                        <div className="badge-icon-wrap badge-icon-wrap--sm">
+                          <Star size={13} className="badge-item-icon" />
+                        </div>
                       )}
                       <div>
                         <span className="font-medium">{badge.title}</span>

@@ -1,5 +1,7 @@
 import api from "./api";
 
+export type UserStatus = 'nao_iniciado' | 'em_andamento' | 'aprovado' | 'reprovado';
+
 export interface PerformanceUser {
   id: number;
   name: string;
@@ -7,7 +9,7 @@ export interface PerformanceUser {
   courses_completed: number;
   average_score: number;
   assessments_completed: number;
-  approved: boolean;
+  status: UserStatus;
 }
 
 export interface PerformanceCourse {
@@ -21,6 +23,8 @@ export interface PerformanceOverview {
   courses: PerformanceCourse[];
   overall: {
     total_users: number;
+    nao_iniciado: number;
+    em_andamento: number;
     approved: number;
     failed: number;
     average_score: number;
@@ -42,7 +46,7 @@ export interface UserPerformanceData {
     average_score: number;
     assessments_completed: number;
     courses_completed: number;
-    approved: boolean;
+    status: UserStatus;
   };
   courses: { id: number; title: string; progress: number }[];
   timeline: { date: string; media: number }[];

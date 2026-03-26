@@ -1,24 +1,19 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import PageLoader from "@/components/ui/PageLoader";
 
 interface PrivateRouteProps {
   requiredRole?: "gerente" | "aluno";
 }
 
 export default function PrivateRoute({ requiredRole }: PrivateRouteProps) {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, isGerente } = useAuth();
 
-  if (isLoading) {
-    return <PageLoader loading={true} />;
-  }
-
-  if (!isAuthenticated) {
+  if (!isLoading && !isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
-  if (requiredRole && user?.tipo !== requiredRole) {
-    return <Navigate to="/dashboard" replace />;
+  if (!isLoading && requiredRole && user?.tipo !== requiredRole) {
+    return <Navigate to={isGerente ? "/desempenhos" : "/dashboard"} replace />;
   }
 
   return <Outlet />;

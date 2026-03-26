@@ -1,25 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { setDocumentTitle } from "@/config/appConfig";
 import { useAuth } from "@/contexts/AuthContext";
-import { updateProfile } from "@/services/auth.service";
-import { useSocketStatus } from "@/hooks/useSocketStatus";
-import { debugPushStatus } from "@/services/push.debug";
+import { updateProfile, uploadAvatar } from "@/services/auth.service";
 import PageLoader from "@/components/ui/PageLoader";
+import { showAlert } from "@/contexts/AlertPopupContext";
+import { resolveMediaUrl } from "@/services/media.service";
 
-const SOCKET_LABELS: Record<string, string> = {
-  connected: "Conectado (notificações em tempo real)",
-  connecting: "Conectando...",
-  disconnected: "Desconectado",
-  unavailable: "Indisponível",
-  not_configured: "Não configurado (VITE_PUSHER_APP_KEY ausente no .env)",
-  unknown: "Desconhecido",
-};
+const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/gif,image/webp";
 
 export default function Settings() {
   const { user, setUser } = useAuth();
-  const socketStatus = useSocketStatus(user?.id);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: "",
     full_name: "",
@@ -48,15 +41,35 @@ export default function Settings() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
     try {
       const updated = await updateProfile(form);
       setUser(updated);
-      setMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
+      showAlert({ type: "success", message: "Perfil atualizado com sucesso!" });
     } catch {
-      setMessage({ type: "error", text: "Erro ao atualizar perfil. Tente novamente." });
+      showAlert({ type: "error", message: "Erro ao atualizar perfil. Tente novamente." });
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleAvatarSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showAlert({ type: "error", message: "Apenas imagens são permitidas (JPEG, PNG, GIF, WebP)." });
+      return;
+    }
+    setAvatarUploading(true);
+    try {
+      const updated = await uploadAvatar(file);
+      setUser(updated);
+      setForm((f) => ({ ...f, avatar: updated.avatar ?? "" }));
+      showAlert({ type: "success", message: "Foto de perfil atualizada!" });
+    } catch {
+      showAlert({ type: "error", message: "Erro ao enviar foto. Tente novamente." });
+    } finally {
+      setAvatarUploading(false);
+      e.target.value = "";
     }
   }
 
@@ -67,42 +80,7 @@ export default function Settings() {
       <div className="settings-page">
         <h2 className="page-title mb-6 text-xl font-bold text-foreground">Configurações da Conta</h2>
 
-        <div className="mb-6 p-4 rounded-lg bg-muted/50 border border-border">
-          <h3 className="text-sm font-medium mb-2">Status do socket (notificações em tempo real)</h3>
-          <p className={`text-sm ${socketStatus === "connected" ? "text-green-600" : socketStatus === "not_configured" ? "text-amber-600" : "text-muted-foreground"}`}>
-            {SOCKET_LABELS[socketStatus] ?? socketStatus}
-          </p>
-          {socketStatus === "not_configured" && (
-            <p className="text-xs text-muted-foreground mt-2">
-              Crie <code className="bg-muted px-1 rounded">frontend/padaria-educacao/.env</code> com VITE_PUSHER_APP_KEY, VITE_PUSHER_APP_CLUSTER e VITE_API_BASE (base do backend, ex: http://localhost:8000).
-            </p>
-          )}
-        </div>
-
-        <div className="mb-6 p-4 rounded-lg bg-muted/50 border border-border">
-          <h3 className="text-sm font-medium mb-2">Web Push (notificações fora da plataforma)</h3>
-          <p className="text-sm text-muted-foreground mb-2">
-            Diagnóstico completo no console. Abra as ferramentas do desenvolvedor (F12) e clique no botão abaixo.
-          </p>
-          <button
-            type="button"
-            onClick={() => debugPushStatus()}
-            className="text-sm px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20"
-          >
-            Executar diagnóstico Web Push
-          </button>
-          <p className="text-xs text-muted-foreground mt-2">
-            Ou no console: <code className="bg-muted px-1 rounded">debugPushStatus()</code>
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit} className="settings-form max-w-xl space-y-4">
-          {message && (
-            <div className={`p-3 rounded-lg text-sm ${message.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-              {message.text}
-            </div>
-          )}
-
           <div>
             <label className="block text-sm font-medium mb-1">Nome de exibição</label>
             <input
@@ -126,14 +104,40 @@ export default function Settings() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">URL da imagem de perfil</label>
-            <input
-              type="url"
-              value={form.avatar}
-              onChange={(e) => setForm((f) => ({ ...f, avatar: e.target.value }))}
-              className="w-full p-3 border border-input rounded-lg bg-background text-foreground"
-              placeholder="https://..."
-            />
+            <label className="block text-sm font-medium mb-1">Foto de perfil</label>
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-border">
+                {form.avatar ? (
+                  <img
+                    src={resolveMediaUrl(form.avatar)}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl text-muted-foreground">?</span>
+                )}
+              </div>
+              <div className="flex-1">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ACCEPTED_IMAGE_TYPES}
+                  onChange={handleAvatarSelect}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={avatarUploading}
+                  className="px-4 py-2 rounded-lg border border-input bg-muted/30 hover:bg-muted/50 transition-colors text-sm disabled:opacity-60"
+                >
+                  {avatarUploading ? "Enviando..." : "Enviar imagem"}
+                </button>
+                <p className="text-xs text-muted-foreground mt-1">
+                  JPEG, PNG, GIF ou WebP. Máx. 5MB.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div>

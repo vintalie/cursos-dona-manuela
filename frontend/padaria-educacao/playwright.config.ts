@@ -5,6 +5,6 @@ export default createLovableConfig({
   // Example:
   // timeout: 60000,
   // use: {
-  //   baseURL: 'http://localhost:3000',
+  //   baseURL: 'https://ead-api.dcmmarketingdigital.com.br:3000',
   // },
 });

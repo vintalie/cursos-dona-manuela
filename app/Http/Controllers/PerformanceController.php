@@ -35,7 +35,7 @@ class PerformanceController extends Controller
                 'courses_completed' => $coursesCompleted,
                 'average_score' => $stats['average_score'],
                 'assessments_completed' => $stats['assessments_completed'],
-                'approved' => $stats['approved'],
+                'status' => $stats['status'],
             ];
         });
 
@@ -107,15 +107,29 @@ class PerformanceController extends Controller
         $acertosPct = $totalMax > 0 ? round(($totalScore / $totalMax) * 100) : 0;
         $errosPct = 100 - $acertosPct;
 
+        $enrollments = DB::table('course_user')
+            ->where('course_id', $course->id)
+            ->get(['user_id', 'progress']);
+
+        $inProgress = 0;
         $approved = 0;
         $failed = 0;
-        foreach ($userResults as $ur) {
-            if ($ur['count'] === 0) continue;
-            $avg = $ur['max'] > 0 ? ($ur['total'] / $ur['max']) * 100 : 0;
-            if ($avg >= self::APPROVAL_THRESHOLD) {
-                $approved++;
+
+        foreach ($enrollments as $enrollment) {
+            $uid = $enrollment->user_id;
+            if ($enrollment->progress < 100) {
+                $inProgress++;
+            } elseif (isset($userResults[$uid]) && $userResults[$uid]['count'] > 0) {
+                $avg = $userResults[$uid]['max'] > 0
+                    ? ($userResults[$uid]['total'] / $userResults[$uid]['max']) * 100
+                    : 0;
+                if ($avg >= self::APPROVAL_THRESHOLD) {
+                    $approved++;
+                } else {
+                    $failed++;
+                }
             } else {
-                $failed++;
+                $approved++;
             }
         }
 
@@ -124,11 +138,11 @@ class PerformanceController extends Controller
             'media' => $v['total'],
         ])->sortKeys()->values();
 
-        $pieData = [
-            ['name' => 'Aprovados', 'value' => $approved, 'color' => '#22c55e'],
-            ['name' => 'Reprovados', 'value' => $failed, 'color' => '#ef4444'],
-        ];
-        if ($approved === 0 && $failed === 0) {
+        $pieData = [];
+        if ($approved > 0) $pieData[] = ['name' => 'Aprovados', 'value' => $approved, 'color' => '#22c55e'];
+        if ($inProgress > 0) $pieData[] = ['name' => 'Em andamento', 'value' => $inProgress, 'color' => '#3b82f6'];
+        if ($failed > 0) $pieData[] = ['name' => 'Reprovados', 'value' => $failed, 'color' => '#ef4444'];
+        if (empty($pieData)) {
             $pieData = [['name' => 'Sem dados', 'value' => 1, 'color' => '#94a3b8']];
         }
 
@@ -195,13 +209,28 @@ class PerformanceController extends Controller
         }
 
         $averageScore = $totalMax > 0 ? round(($totalScore / $totalMax) * 100) : 0;
-        $approved = $averageScore >= self::APPROVAL_THRESHOLD;
+
+        $assessmentsCompleted = DB::table('assessment_user')->where('user_id', $userId)->count();
+        $coursesCompleted = DB::table('course_user')->where('user_id', $userId)->where('progress', 100)->count();
+        $totalEnrolled = DB::table('course_user')->where('user_id', $userId)->count();
+        $hasInProgressCourses = DB::table('course_user')
+            ->where('user_id', $userId)
+            ->where('progress', '<', 100)
+            ->exists();
+
+        if ($totalEnrolled === 0) {
+            $status = 'nao_iniciado';
+        } elseif ($assessmentsCompleted === 0 || $hasInProgressCourses) {
+            $status = 'em_andamento';
+        } else {
+            $status = $averageScore >= self::APPROVAL_THRESHOLD ? 'aprovado' : 'reprovado';
+        }
 
         return [
             'average_score' => $averageScore,
-            'assessments_completed' => DB::table('assessment_user')->where('user_id', $userId)->count(),
-            'courses_completed' => DB::table('course_user')->where('user_id', $userId)->where('progress', 100)->count(),
-            'approved' => $approved,
+            'assessments_completed' => $assessmentsCompleted,
+            'courses_completed' => $coursesCompleted,
+            'status' => $status,
         ];
     }
 
@@ -258,15 +287,10 @@ class PerformanceController extends Controller
     private function getOverallStats(): array
     {
         $alunos = User::where('tipo', 'aluno')->pluck('id');
-        $approved = 0;
-        $failed = 0;
+        $counts = ['nao_iniciado' => 0, 'em_andamento' => 0, 'aprovado' => 0, 'reprovado' => 0];
         foreach ($alunos as $aid) {
             $s = $this->getUserStats($aid);
-            if ($s['approved']) {
-                $approved++;
-            } else {
-                $failed++;
-            }
+            $counts[$s['status']]++;
         }
 
         $totalCompletions = DB::table('assessment_user')->count();
@@ -280,8 +304,10 @@ class PerformanceController extends Controller
 
         return [
             'total_users' => $alunos->count(),
-            'approved' => $approved,
-            'failed' => $failed,
+            'nao_iniciado' => $counts['nao_iniciado'],
+            'em_andamento' => $counts['em_andamento'],
+            'approved' => $counts['aprovado'],
+            'failed' => $counts['reprovado'],
             'average_score' => $avg,
             'total_assessments' => $totalCompletions,
         ];

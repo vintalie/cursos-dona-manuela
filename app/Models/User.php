@@ -20,6 +20,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'google_id',
         'tipo',
         'password',
         'full_name',
@@ -78,5 +79,10 @@ class User extends Authenticatable implements JWTSubject
     public function gameProgress()
     {
         return $this->hasMany(GameProgress::class);
+    }
+
+    public function media()
+    {
+        return $this->hasMany(Media::class);
     }
 }

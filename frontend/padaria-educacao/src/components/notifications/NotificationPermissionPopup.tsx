@@ -8,7 +8,7 @@ import {
   subscribeUserAfterPermission,
 } from "@/services/push.service";
 import { Bell, X } from "lucide-react";
-import { toast } from "sonner";
+import { showAlert } from "@/contexts/AlertPopupContext";
 
 export default function NotificationPermissionPopup() {
   const { user } = useAuth();
@@ -54,13 +54,13 @@ export default function NotificationPermissionPopup() {
       subscribeUserAfterPermission().then((ok) => {
         window.dispatchEvent(new CustomEvent("push-subscription-attempted"));
         if (!ok) {
-          toast.error("Não foi possível ativar. Use o botão no painel de notificações para tentar novamente.");
+          showAlert({ type: "error", message: "Não foi possível ativar. Use o botão no painel de notificações para tentar novamente." });
         }
       });
     } catch {
       setPermissionPopupShown(user?.id ?? undefined);
       setVisible(false);
-      toast.error("Erro ao ativar notificações. Tente novamente.");
+      showAlert({ type: "error", message: "Erro ao ativar notificações. Tente novamente." });
     }
   }
 

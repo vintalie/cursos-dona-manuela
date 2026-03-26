@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { createCourse, getCourses } from "@/services/course.service";
+import { showAlert } from "@/contexts/AlertPopupContext";
 import type { Course } from "@/types";
 
 export default function CreateCourse() {
@@ -9,8 +10,6 @@ export default function CreateCourse() {
   const [targetRole, setTargetRole] = useState("");
   const [featured, setFeatured] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {
@@ -40,9 +39,9 @@ export default function CreateCourse() {
       setDifficulty("");
       setTargetRole("");
       setFeatured(false);
-      setSuccess(true);
+      showAlert({ type: "success", message: "Curso criado com sucesso!" });
     } catch (err: unknown) {
-      setError((err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Erro ao criar curso");
+      showAlert({ type: "error", message: (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Erro ao criar curso" });
     } finally {
       setLoading(false);
     }
@@ -77,8 +76,6 @@ export default function CreateCourse() {
           <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
           Destacar curso
         </label>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-2">Curso criado com sucesso!</p>}
         <button type="submit" disabled={loading}>
           {loading ? "Criando..." : "Criar Curso"}
         </button>

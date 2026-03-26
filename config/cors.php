@@ -6,7 +6,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://ead.dcmmarketingdigital.com.br','http://localhost:5173','http://localhost:5174','http://localhost:8080','http://localhost'],
+    'allowed_origins' => ['https://ead.dcmmarketingdigital.com.br','https://ead-api.dcmmarketingdigital.com.br'],
 
     'allowed_headers' => ['*'],
 

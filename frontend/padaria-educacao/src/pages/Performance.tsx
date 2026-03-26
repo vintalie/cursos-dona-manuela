@@ -20,7 +20,15 @@ import {
   getCourseStats,
   type PerformanceOverview,
   type CourseStats,
+  type UserStatus,
 } from "@/services/performance.service";
+
+const STATUS_CONFIG: Record<UserStatus, { label: string; badge: string; color: string }> = {
+  nao_iniciado: { label: "Não Iniciado", badge: "badge-muted", color: "text-muted-foreground" },
+  em_andamento: { label: "Em Andamento", badge: "badge-info", color: "text-blue-600" },
+  aprovado: { label: "Aprovado", badge: "badge-success", color: "text-green-600" },
+  reprovado: { label: "Reprovado", badge: "badge-danger", color: "text-red-600" },
+};
 import GaugeChart from "@/components/performance/GaugeChart";
 import PageLoader from "@/components/ui/PageLoader";
 import EmptyState from "@/components/ui/EmptyState";
@@ -180,6 +188,14 @@ export default function Performance() {
               </div>
             </div>
             <div className="stat-card">
+              <span className="stat-value text-muted-foreground">{overview?.overall?.nao_iniciado ?? 0}</span>
+              <span className="stat-label">Não Iniciados</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-value text-blue-600">{overview?.overall?.em_andamento ?? 0}</span>
+              <span className="stat-label">Em Andamento</span>
+            </div>
+            <div className="stat-card">
               <span className="stat-value text-green-600">{overview?.overall?.approved ?? 0}</span>
               <span className="stat-label">Aprovados</span>
             </div>
@@ -222,8 +238,8 @@ export default function Performance() {
                       <td>{u.average_score}%</td>
                       <td>{u.courses_completed}</td>
                       <td>
-                        <span className={u.approved ? "badge-success" : "badge-danger"}>
-                          {u.approved ? "Aprovado" : "Reprovado"}
+                        <span className={STATUS_CONFIG[u.status]?.badge ?? "badge-muted"}>
+                          {STATUS_CONFIG[u.status]?.label ?? u.status}
                         </span>
                       </td>
                       <td>

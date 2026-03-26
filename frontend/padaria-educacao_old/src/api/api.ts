@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost/api", // ajuste se necessário
+  baseURL: "https://ead-api.dcmmarketingdigital.com.br/api", // ajuste se necessário
 });
 
 api.interceptors.request.use((config) => {

@@ -1,0 +1,1 @@
+import{h as e}from"./index-D9cHVwAi.js";async function n(){return(await e.get("/users")).data.data}async function u(s){return(await e.post("/users",s)).data}async function c(s){return(await e.get(`/users/${s}`)).data}async function o(s,a){return(await e.put(`/users/${s}`,a)).data}async function i(s){await e.delete(`/users/${s}`)}export{c as a,u as c,i as d,n as g,o as u};

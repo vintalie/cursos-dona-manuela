@@ -5,6 +5,13 @@
 
     RewriteEngine On
 
+    # Desabilita ModSecurity para Google OAuth (evita 406 em HostGator e similares)
+    <IfModule mod_setenvif.c>
+        SetEnvIf Request_URI "^/api/auth/google" MODSEC_ENABLE=Off
+    </IfModule>
+    RewriteCond %{REQUEST_URI} ^/api/auth/google
+    RewriteRule ^ - [E=MODSEC_ENABLE:Off]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

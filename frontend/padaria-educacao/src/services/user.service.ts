@@ -17,6 +17,19 @@ export async function createUser(data: {
   return res.data as User;
 }
 
+export async function getUser(id: number): Promise<User> {
+  const res = await api.get(`/users/${id}`);
+  return res.data as User;
+}
+
+export async function updateUser(
+  id: number,
+  data: { name?: string; email?: string; tipo?: string; password?: string }
+): Promise<User> {
+  const res = await api.put(`/users/${id}`, data);
+  return res.data as User;
+}
+
 export async function deleteUser(id: number) {
   await api.delete(`/users/${id}`);
 }

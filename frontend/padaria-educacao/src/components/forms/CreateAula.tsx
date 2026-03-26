@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCourses } from "@/services/course.service";
+import { showAlert } from "@/contexts/AlertPopupContext";
 import { createLesson } from "@/services/lesson.service";
 import type { Course, Module } from "@/types";
 
@@ -12,8 +13,6 @@ export default function CreateAula() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     getCourses().then(setCourses).catch(() => setCourses([]));
@@ -26,14 +25,12 @@ export default function CreateAula() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
     if (!title.trim()) {
-      setError("Título é obrigatório");
+      showAlert({ type: "error", message: "Título é obrigatório" });
       return;
     }
     if (!moduleId) {
-      setError("Selecione uma matéria");
+      showAlert({ type: "error", message: "Selecione uma matéria" });
       return;
     }
     setLoading(true);
@@ -49,9 +46,9 @@ export default function CreateAula() {
       setDescription("");
       setPosition("");
       setContent("");
-      setSuccess(true);
+      showAlert({ type: "success", message: "Aula criada com sucesso!" });
     } catch (err: unknown) {
-      setError((err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Erro ao criar aula");
+      showAlert({ type: "error", message: (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Erro ao criar aula" });
     } finally {
       setLoading(false);
     }
@@ -93,8 +90,6 @@ export default function CreateAula() {
           onChange={(e) => setContent(e.target.value)}
           className="min-h-[150px]"
         />
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-2">Aula criada com sucesso!</p>}
         <button type="submit" disabled={loading}>
           {loading ? "Criando..." : "Criar Aula"}
         </button>

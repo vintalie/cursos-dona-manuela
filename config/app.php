@@ -52,7 +52,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://ead-api.dcmmarketingdigital.com.br'),
+
+    'frontend_url' => env('APP_FRONTEND_URL', 'https://ead.dcmmarketingdigital.com.br'),
 
     /*
     |--------------------------------------------------------------------------

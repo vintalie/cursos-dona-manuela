@@ -2,6 +2,9 @@
 
 ## [2026-03-26]
 
+### Security
+- **`.env.example`**: removidos placeholders com credenciais reais do Google OAuth do histórico Git (compatível com GitHub Push Protection); usar apenas variáveis vazias + comentário no exemplo
+
 ### Added
 - **Documentação do projeto**: pacote em `docs/` com visão geral, requisitos (funcionais e não funcionais), arquitetura (diagramas Mermaid), modelo de dados, referência da API REST, frontend (rotas e serviços), matriz de funcionalidades por módulo
 - **`docs/COMPILADO.md`**: índice mestre com links para todos os documentos e materiais existentes (OAuth, PWA, Web Push)
